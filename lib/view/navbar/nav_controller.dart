@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:foot_track/view/add_page.dart';
-import 'package:foot_track/view/home_page.dart';
-import 'package:foot_track/view/matches_page.dart';
-import 'package:foot_track/view/settings_page.dart';
+import 'package:foot_track/view/navbar/add_page.dart';
+import 'package:foot_track/view/navbar/home_page.dart';
+import 'package:foot_track/view/navbar/matches_page.dart';
+import 'package:foot_track/view/navbar/settings_page.dart';
 import 'package:foot_track/view/teams_page.dart';
 
 class NavController extends StatefulWidget {

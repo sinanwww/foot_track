@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/widgets/match_card.dart';
 
 class HomePage extends StatelessWidget {
@@ -33,7 +34,15 @@ class HomePage extends StatelessWidget {
               ),
               itemCount: 10,
               padding: EdgeInsets.all(10),
-              itemBuilder: (context, index) => MatchCard(),
+              itemBuilder:
+                  (context, index) => MatchCard(
+                    displayDateColor: AppTheam.hilight,
+                    displayDate: "Live",
+                    homeTeam: "Manchester City",
+                    homeScroe: 1,
+                    awayTeam: "Manchester United",
+                    awayScore: 2,
+                  ),
             );
           },
         ),

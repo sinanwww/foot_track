@@ -5,7 +5,7 @@ import 'package:foot_track/utls/widgets/add_palyer_sheet.dart';
 import 'package:foot_track/utls/widgets/arrow_button.dart';
 import 'package:foot_track/utls/widgets/auth_button.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
-import 'package:foot_track/view/nav_controller.dart';
+import 'package:foot_track/view/navbar/nav_controller.dart';
 import 'package:get/get.dart';
 
 class CreateTeamPage extends StatelessWidget {

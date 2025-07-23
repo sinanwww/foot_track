@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
-import 'package:intl/intl.dart';
 
 class MatchCard extends StatelessWidget {
-  const MatchCard({super.key});
+  final String displayDate;
+  final String homeTeam;
+  final String awayTeam;
+  final int homeScroe;
+  final int awayScore;
+  final Color displayDateColor;
+
+  const MatchCard({
+    super.key,
+    required this.displayDate,
+    required this.awayScore,
+    required this.awayTeam,
+    required this.homeScroe,
+    required this.homeTeam,
+    required this.displayDateColor,
+  });
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('dd/mm/yyyy').format(now);
-
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20),
       margin: EdgeInsets.all(10),
@@ -18,12 +29,7 @@ class MatchCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         color: AppTheam.primarywhite,
         boxShadow: [
-          BoxShadow(
-            color: Colors.grey[300]!,
-            spreadRadius: 4,
-            blurRadius: 4,
-            offset: Offset(0, 0),
-          ),
+          BoxShadow(color: Colors.grey[400]!, spreadRadius: 5, blurRadius: 10),
         ],
       ),
       child: Column(
@@ -31,17 +37,17 @@ class MatchCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            formattedDate,
+            displayDate,
             style: Fontstyle(
               fontSize: 12,
               fontWeight: FontWeight.w400,
-              color: AppTheam.secondoryText,
+              color: displayDateColor,
             ),
           ),
           Row(
             children: [
               Text(
-                "barcelona",
+                homeTeam,
                 style: Fontstyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
@@ -50,7 +56,7 @@ class MatchCard extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                "5",
+                homeScroe.toString(),
                 style: Fontstyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -63,7 +69,7 @@ class MatchCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                "real madrid",
+                awayTeam,
                 style: Fontstyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
@@ -72,7 +78,7 @@ class MatchCard extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                "0",
+                awayScore.toString(),
                 style: Fontstyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,

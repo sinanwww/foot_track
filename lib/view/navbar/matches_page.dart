@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/widgets/match_card.dart';
+import 'package:intl/intl.dart';
 
 class MatchesPage extends StatelessWidget {
   const MatchesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('dd/mm/yyyy').format(now);
     return Scaffold(
       backgroundColor: Color(0xFFEDE8E8),
       body: SafeArea(
@@ -34,7 +38,15 @@ class MatchesPage extends StatelessWidget {
               ),
               itemCount: 10,
               padding: EdgeInsets.all(10),
-              itemBuilder: (context, index) => MatchCard(),
+              itemBuilder:
+                  (context, index) => MatchCard(
+                    displayDateColor: AppTheam.secondoryText,
+                    displayDate: formattedDate,
+                    homeTeam: "barcalona",
+                    homeScroe: 5,
+                    awayTeam: "real madrid",
+                    awayScore: 0,
+                  ),
             );
           },
         ),
