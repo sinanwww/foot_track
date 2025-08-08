@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:foot_track/utls/app_theam.dart';
-import 'package:foot_track/utls/font_style.dart';
-import 'package:foot_track/view/new_match.dart/select_page.dart';
-import 'package:foot_track/view/new_team/team_name_page.dart';
+import 'package:foot_track/view/match/select_page.dart';
+import 'package:foot_track/view/player/add_player_page.dart';
+import 'package:foot_track/view/team/new_team/add_new_button.dart';
+import 'package:foot_track/view/team/new_team/team_name_page.dart';
+import 'package:foot_track/view/tournament/create%20tournament/add_tour_page%20.dart';
 import 'package:get/get.dart';
 
 class AddPage extends StatelessWidget {
@@ -14,52 +15,38 @@ class AddPage extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              addButton(
+              AddNewButton(
+                image: "assets/image/player.png",
+                label: "Add New Player",
+                onClick: () {
+                  Get.to(() => AddPlayerPage());
+                },
+              ),
+              AddNewButton(
+                image: "assets/image/team.png",
                 label: "Add New Team",
                 onClick: () => Get.to(() => TeamNamePage()),
               ),
-              SizedBox(height: 30),
-              addButton(
+              AddNewButton(
+                image: "assets/image/match.jpg",
                 label: "Add New Match",
+                onClick: () => Get.to(() => SelectPage()),
+              ),
 
+              AddNewButton(
+                image: "assets/image/2-1-1536x864.jpg",
+                label: "Add New Tournament",
                 onClick: () {
-                  Get.to(() => SelectPage());
+                  Get.to(() => AddTournamentPage());
                 },
               ),
-            ],
+            ],           
           ),
         ),
       ),
     );
   }
 }
-
-Widget addButton({required String label, required Function() onClick}) =>
-    ElevatedButton(
-      onPressed: onClick,
-
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            style: Fontstyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          Icon(Icons.add_rounded, color: Colors.white, size: 30),
-        ],
-      ),
-
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppTheam.primary,
-        foregroundColor: Colors.white,
-        fixedSize: Size(250, 70),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-    );
