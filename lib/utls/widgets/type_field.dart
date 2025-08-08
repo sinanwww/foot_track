@@ -3,11 +3,22 @@ import 'package:foot_track/utls/app_theam.dart';
 
 class TypeField extends StatelessWidget {
   final String hintText;
-  const TypeField({super.key, required this.hintText});
+  final String? Function(String?)? validator;
+  final TextEditingController? controller;
+  const TypeField({
+    super.key,
+    required this.hintText,
+    required this.controller,
+    this.validator,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(decoration: customDecoretion(hintText));
+    return TextFormField(
+      validator: validator,
+      controller: controller,
+      decoration: customDecoretion(hintText),
+    );
   }
 }
 

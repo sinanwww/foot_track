@@ -3,8 +3,15 @@ import 'package:foot_track/utls/app_theam.dart';
 
 class AuthField extends StatelessWidget {
   final String hintText;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
 
-  const AuthField({super.key, required this.hintText});
+  const AuthField({
+    super.key,
+    required this.hintText,
+    this.controller,
+    this.validator,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +22,8 @@ class AuthField extends StatelessWidget {
         ],
       ),
       child: TextFormField(
+        validator: validator,
+        controller: controller,
         decoration: InputDecoration(
           hintText: hintText,
           border: OutlineInputBorder(

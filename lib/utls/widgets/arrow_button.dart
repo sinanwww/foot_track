@@ -31,6 +31,7 @@ class ArrowButton extends StatelessWidget {
                 fontWeight: FontWeight.w400,
               ),
             ),
+            SizedBox(width: 8),
             Icon(
               isArrow ? Icons.arrow_forward : Icons.add_rounded,
               color: Colors.white,
