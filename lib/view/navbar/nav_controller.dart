@@ -3,11 +3,12 @@ import 'package:foot_track/view/navbar/add_page.dart';
 import 'package:foot_track/view/navbar/home_page.dart';
 import 'package:foot_track/view/navbar/matches_page.dart';
 import 'package:foot_track/view/navbar/settings_page.dart';
-import 'package:foot_track/view/teams_page.dart';
+import 'package:foot_track/view/navbar/teams_players.dart';
 
 class NavController extends StatefulWidget {
   final int? index;
-  const NavController({super.key, this.index = 0});
+  final int? teamPlayerTabIndex;
+  const NavController({super.key, this.index = 0, this.teamPlayerTabIndex = 0});
 
   @override
   State<NavController> createState() => _NavControllerState();
@@ -26,6 +27,7 @@ class _NavControllerState extends State<NavController> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationBar(
+        backgroundColor: Colors.white,
         height: 50,
         onDestinationSelected: (int index) {
           setState(() {
@@ -78,8 +80,8 @@ class _NavControllerState extends State<NavController> {
             // add page
             AddPage(),
 
-            // Teams page
-            TeamsPage(),
+            // Teams and palyers Tab
+            TeamsPlayersTab(teamPlayerTabIndex: widget.teamPlayerTabIndex),
 
             // Teams page
             SettingsPage(),
