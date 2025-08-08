@@ -1,94 +1,76 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
 
 class MatchCard extends StatelessWidget {
+  final String? homeTeamLogoPath;
+  final String? awayTeamLogoPath;
   final String displayDate;
   final String homeTeam;
+  final int homeScore;
   final String awayTeam;
-  final int homeScroe;
   final int awayScore;
-  final Color displayDateColor;
+  final String startTime;
+  final VoidCallback onTap;
 
   const MatchCard({
     super.key,
+    this.homeTeamLogoPath,
+    this.awayTeamLogoPath,
     required this.displayDate,
-    required this.awayScore,
-    required this.awayTeam,
-    required this.homeScroe,
     required this.homeTeam,
-    required this.displayDateColor,
+    required this.homeScore,
+    required this.awayTeam,
+    required this.awayScore,
+    required this.startTime,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      margin: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: AppTheam.primarywhite,
-        boxShadow: [
-          BoxShadow(color: Colors.grey[400]!, spreadRadius: 5, blurRadius: 10),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            displayDate,
-            style: Fontstyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              color: displayDateColor,
-            ),
-          ),
-          Row(
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                homeTeam,
-                style: Fontstyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  color: AppTheam.primaryBlack,
-                ),
+              Text(displayDate, style: Fontstyle(fontSize: 10)),
+              SizedBox(height: 5),
+              cardRow(
+                imagePath: homeTeamLogoPath!,
+                teamName: homeTeam,
+                score: homeScore.toString(),
               ),
               Spacer(),
-              Text(
-                homeScroe.toString(),
-                style: Fontstyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppTheam.primaryBlack,
-                ),
+              cardRow(
+                imagePath: awayTeamLogoPath!,
+                teamName: awayTeam,
+                score: awayScore.toString(),
               ),
             ],
           ),
-          SizedBox(height: 5),
-          Row(
-            children: [
-              Text(
-                awayTeam,
-                style: Fontstyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  color: AppTheam.primaryBlack,
-                ),
-              ),
-              Spacer(),
-              Text(
-                awayScore.toString(),
-                style: Fontstyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppTheam.primaryBlack,
-                ),
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
 }
+
+Widget cardRow({
+  required String imagePath,
+  required String teamName,
+  required String score,
+}) => Row(
+  children: [
+    Image.file(File(imagePath), width: 20),
+    SizedBox(width: 10),
+    Text(teamName),
+    Spacer(),
+    Text(score),
+  ],
+);
