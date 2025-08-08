@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
+import 'package:foot_track/view/new_match.dart/select_page.dart';
 import 'package:foot_track/view/new_team/team_name_page.dart';
 import 'package:get/get.dart';
 
@@ -21,7 +22,13 @@ class AddPage extends StatelessWidget {
                 onClick: () => Get.to(() => TeamNamePage()),
               ),
               SizedBox(height: 30),
-              addButton(label: "Add New Team", onClick: () {}),
+              addButton(
+                label: "Add New Match",
+
+                onClick: () {
+                  Get.to(() => SelectPage());
+                },
+              ),
             ],
           ),
         ),

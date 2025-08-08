@@ -4,7 +4,7 @@ import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/widgets/auth_button.dart';
 import 'package:foot_track/utls/widgets/auth_field.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
-import 'package:foot_track/view/nav_controller.dart';
+import 'package:foot_track/view/navbar/nav_controller.dart';
 import 'package:get/get.dart';
 
 class SignupPage extends StatelessWidget {

@@ -60,7 +60,7 @@ class HelpPage extends StatelessWidget {
     padding: const EdgeInsets.symmetric(vertical: 8),
     child: SizedBox(
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             "${orderNumber.toString()}.",
@@ -77,7 +77,7 @@ class HelpPage extends StatelessWidget {
               label,
               style: Fontstyle(
                 color: AppTheam.primaryBlack,
-                fontSize: 12,
+                fontSize: 15,
                 fontWeight: FontWeight.w400,
               ),
             ),

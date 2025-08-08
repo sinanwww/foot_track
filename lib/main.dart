@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/utls/app_theam.dart';
-import 'package:foot_track/view/nav_controller.dart';
+import 'package:foot_track/view/navbar/nav_controller.dart';
 import 'package:get/get.dart';
 
 void main() {

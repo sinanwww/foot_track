@@ -8,4 +8,6 @@ class AppTheam {
   static const Color secondoryText = Color(0xFF586C5C);
   static const Color scaffoldBg = Color(0xFFEDE8E8);
   static const Color typeFieldBg = Color(0xFFDCD2D2);
+  static const Color desablePrimary = Color(0xFF86D9FF);
+  static const Color desableGreay = Color(0xFF5B5B5B);
 }
