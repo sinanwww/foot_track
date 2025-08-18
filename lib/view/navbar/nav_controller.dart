@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/view/navbar/add_page.dart';
 import 'package:foot_track/view/navbar/home_page.dart';
-import 'package:foot_track/view/navbar/matches_page.dart';
+import 'package:foot_track/view/navbar/match_tour_page.dart';
 import 'package:foot_track/view/navbar/settings_page.dart';
 import 'package:foot_track/view/navbar/teams_players.dart';
 
 class NavController extends StatefulWidget {
   final int? index;
   final int? teamPlayerTabIndex;
-  const NavController({super.key, this.index = 0, this.teamPlayerTabIndex = 0});
+  final int? matchTourTabIndex;
+  const NavController({
+    super.key,
+    this.index = 0,
+    this.teamPlayerTabIndex = 0,
+    this.matchTourTabIndex = 0,
+  });
 
   @override
   State<NavController> createState() => _NavControllerState();
@@ -27,7 +34,12 @@ class _NavControllerState extends State<NavController> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.white,
+        elevation: 5,
+        backgroundColor:
+            Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+        shadowColor: const Color.fromARGB(255, 234, 226, 226),
+        indicatorColor: Theme.of(context).colorScheme.secondary,
+
         height: 50,
         onDestinationSelected: (int index) {
           setState(() {
@@ -74,8 +86,8 @@ class _NavControllerState extends State<NavController> {
             // Home page
             HomePage(),
 
-            // matches page
-            MatchesPage(),
+            // match and tournament listing page page
+            MatchTourPage(matchTourTabIndex: widget.matchTourTabIndex),
 
             // add page
             AddPage(),
@@ -99,6 +111,9 @@ class _NavControllerState extends State<NavController> {
         currentPageIndex = index;
       });
     },
-    icon: Icon(currentPageIndex == index ? activeIcon : icon),
+    icon:
+        currentPageIndex == index
+            ? Icon(activeIcon, color: Theme.of(context).colorScheme.secondary)
+            : Icon(icon, color: AppColors.secondary),
   );
 }

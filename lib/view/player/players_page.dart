@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/player/player_model.dart';
+import 'package:foot_track/utls/resp.dart';
 import 'package:foot_track/utls/widgets/search_field.dart';
+import 'package:foot_track/utls/font_style.dart';
+import 'package:foot_track/utls/app_theam.dart';
+import 'package:foot_track/view%20model/player.dart';
 import 'package:foot_track/view/player/widgets/player_card.dart';
-import 'package:foot_track/view model/player.dart';
 
 class PlayersPage extends StatefulWidget {
   const PlayersPage({super.key});
@@ -12,42 +15,42 @@ class PlayersPage extends StatefulWidget {
 }
 
 class _PlayersPageState extends State<PlayersPage> {
-  SearchHandler<PlayerModel>? _searchHandler;
   final PlayerRepo _playerRepo = PlayerRepo();
+  SearchHandler<PlayerModel>? _searchHandler;
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
+    _initializePlayers();
   }
 
   void _onSearchChanged() {
     _searchHandler?.filter(_searchController.text);
   }
 
-  Future<void> _loadPlayers() async {
+  Future<void> _initializePlayers() async {
     await _playerRepo.init();
-    final players = await _playerRepo.getAllPlayers();
-    _searchHandler = SearchHandler<PlayerModel>(
-      allItems: players,
-      filterProperty: (player) => player.name,
-    );
+    setState(() {
+      _searchHandler = SearchHandler<PlayerModel>(
+        allItems: _playerRepo.playersNotifier.value,
+        filterProperty: (player) => player.name,
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: FutureBuilder<void>(
-          future: _loadPlayers(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+        child: ValueListenableBuilder<List<PlayerModel>>(
+          valueListenable: _playerRepo.playersNotifier,
+          builder: (context, players, _) {
+            if (_searchHandler == null) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            }
+            // _searchHandler!.allItems = players; // Sync search handler with latest players
             return Column(
               children: [
                 SearchWidget(
@@ -56,34 +59,32 @@ class _PlayersPageState extends State<PlayersPage> {
                   hintText: 'Search players...',
                 ),
                 Expanded(
-                  child: LayoutBuilder(
-                    builder: (context, cst) {
-                      int count = 1;
-                      double ratio = 4 / 1;
-                      if (cst.maxWidth > 300) ratio = 3 / 0.8;
-                      if (cst.maxWidth > 700) count = 2;
-                      if (cst.maxWidth > 1200) {
-                        count = 3;
-                        ratio = 5 / 1.2;
+                  child: ValueListenableBuilder<List<PlayerModel>>(
+                    valueListenable: _searchHandler!.filteredItemsNotifier,
+                    builder: (context, filteredPlayers, _) {
+                      if (filteredPlayers.isEmpty) {
+                        return Center(
+                          child: Text(
+                            "No players found",
+                            style: Fontstyle(
+                              fontSize: 16,
+                              color: AppColors.secondary,
+                            ),
+                          ),
+                        );
                       }
-                      if (cst.maxWidth > 2400) {
-                        count = 3;
-                        ratio = 6 / 1;
-                      }
-
-                      return ValueListenableBuilder<List<PlayerModel>>(
-                        valueListenable: _searchHandler!.filteredItemsNotifier,
-                        builder: (context, filteredPlayers, _) {
-                          if (filteredPlayers.isEmpty) {
-                            return const Center(
-                              child: Text("No players found"),
-                            );
-                          }
+                      return LayoutBuilder(
+                        builder: (context, cst) {
+                          int count = 1;
+                          double ratio = 4 / 1;
+                         ratio = getRatio(cst.maxWidth);
+                    count = getCount(cst.maxWidth);
                           return GridView.builder(
                             padding: const EdgeInsets.all(15),
                             itemCount: filteredPlayers.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisSpacing: 5,
                                   childAspectRatio: ratio,
                                   crossAxisCount: count,
                                 ),

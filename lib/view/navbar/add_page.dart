@@ -13,38 +13,45 @@ class AddPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              AddNewButton(
-                image: "assets/image/player.png",
-                label: "Add New Player",
-                onClick: () {
-                  Get.to(() => AddPlayerPage());
-                },
+        child: LayoutBuilder(
+          builder: (context, cst) {
+            final crossAxisCount = cst.maxWidth < 1024 ? 1 : 2;
+            return Center(
+              child: GridView.count(
+                crossAxisCount: crossAxisCount,
+                padding: EdgeInsets.all(30),
+                mainAxisSpacing: 16.0,
+                crossAxisSpacing: 16.0,
+                childAspectRatio: 1.7,
+                children: [
+                  AddNewButton(
+                    image: "assets/image/player.png",
+                    label: "Add New Player",
+                    onClick: () {
+                      Get.to(() => AddPlayerPage());
+                    },
+                  ),
+                  AddNewButton(
+                    image: "assets/image/team.png",
+                    label: "Add New Team",
+                    onClick: () => Get.to(() => TeamNamePage()),
+                  ),
+                  AddNewButton(
+                    image: "assets/image/match.jpg",
+                    label: "Add New Match",
+                    onClick: () => Get.to(() => SelectPage()),
+                  ),
+                  AddNewButton(
+                    image: "assets/image/tour.jpg",
+                    label: "Add New Tournament",
+                    onClick: () {
+                      Get.to(() => AddTournamentPage());
+                    },
+                  ),
+                ],
               ),
-              AddNewButton(
-                image: "assets/image/team.png",
-                label: "Add New Team",
-                onClick: () => Get.to(() => TeamNamePage()),
-              ),
-              AddNewButton(
-                image: "assets/image/match.jpg",
-                label: "Add New Match",
-                onClick: () => Get.to(() => SelectPage()),
-              ),
-
-              AddNewButton(
-                image: "assets/image/2-1-1536x864.jpg",
-                label: "Add New Tournament",
-                onClick: () {
-                  Get.to(() => AddTournamentPage());
-                },
-              ),
-            ],           
-          ),
+            );
+          },
         ),
       ),
     );

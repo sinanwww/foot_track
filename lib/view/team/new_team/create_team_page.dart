@@ -1,8 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/player/player_model.dart';
 import 'package:foot_track/model/team/team_model.dart';
+import 'package:foot_track/utls/app_theam.dart';
+import 'package:foot_track/utls/resp.dart';
 import 'package:foot_track/utls/widgets/arrow_button.dart';
 import 'package:foot_track/utls/widgets/auth_button.dart';
 import 'package:foot_track/view/navbar/nav_controller.dart';
@@ -62,52 +62,85 @@ class _CreateTeamState extends State<CreateTeam> {
                     team?.teamPlayer?.isEmpty ?? true
                         ? const Center(child: Text("No players in this team"))
                         : Expanded(
-                          child: ListView.builder(
-                            itemCount: team!.teamPlayer!.length,
-                            itemBuilder: (context, index) {
-                              final playerKey = team!.teamPlayer!.keys
-                                  .elementAt(index);
-                              final jerseyNumber =
-                                  team!.teamPlayer![playerKey]!;
-
-                              return FutureBuilder<PlayerModel?>(
-                                future: PlayerRepo().getPlayer(playerKey),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const ListTile(
-                                      leading: CircularProgressIndicator(),
-                                      title: Text('Loading player...'),
-                                    );
-                                  }
-
-                                  if (snapshot.hasError || !snapshot.hasData) {
-                                    return ListTile(
-                                      leading: const Icon(Icons.error),
-                                      title: Text('Jersey: $jerseyNumber'),
-                                      subtitle: const Text('Player not found'),
-                                    );
-                                  }
-
-                                  final player = snapshot.data!;
-                                  return Card(
-                                    margin: EdgeInsets.all(10),
-                                    child: ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundColor: Colors.orange,
-                                        child: Text(
-                                          jerseyNumber.toString(),
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                      title: Text(player.name),
-                                      subtitle: Text(player.position),
-                                      trailing: CircleAvatar(
-                                        backgroundImage: FileImage(
-                                          File(player.imagePath!),
-                                        ),
-                                      ),
+                          child: LayoutBuilder(
+                            builder: (context, cst) {
+                              int count = 1;
+                              double ratio = 4 / 1;
+                              ratio = getRatio(cst.maxWidth);
+                              count = getCount(cst.maxWidth);
+                              return GridView.builder(
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      childAspectRatio: ratio,
+                                      crossAxisCount: count,
+                                      crossAxisSpacing: 5,
                                     ),
+                                itemCount: team!.teamPlayer!.length,
+                                itemBuilder: (context, index) {
+                                  final playerKey = team!.teamPlayer!.keys
+                                      .elementAt(index);
+                                  final jerseyNumber =
+                                      team!.teamPlayer![playerKey]!;
+
+                                  return FutureBuilder<PlayerModel?>(
+                                    future: PlayerRepo().getPlayer(playerKey),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const ListTile(
+                                          leading: CircularProgressIndicator(),
+                                          title: Text('Loading player...'),
+                                        );
+                                      }
+
+                                      if (snapshot.hasError ||
+                                          !snapshot.hasData) {
+                                        return ListTile(
+                                          leading: const Icon(Icons.error),
+                                          title: Text('Jersey: $jerseyNumber'),
+                                          subtitle: const Text(
+                                            'Player not found',
+                                          ),
+                                        );
+                                      }
+
+                                      final player = snapshot.data!;
+                                      return Card(
+                                        child: Center(
+                                          child: ListTile(
+                                            leading: CircleAvatar(
+                                              backgroundColor: Colors.orange,
+                                              child: Text(
+                                                jerseyNumber.toString(),
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                            title: Text(
+                                              player.name,
+                                              style: TextStyle(
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.secondary,
+                                              ),
+                                            ),
+                                            subtitle: Text(
+                                              player.position,
+                                              style: TextStyle(
+                                                color: AppColors.secondary,
+                                              ),
+                                            ),
+                                            trailing: CircleAvatar(
+                                              backgroundImage: MemoryImage(
+                                                player.imageData!,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   );
                                 },
                               );
@@ -118,7 +151,7 @@ class _CreateTeamState extends State<CreateTeam> {
                 ),
               ),
       bottomNavigationBar: Container(
-        color: Colors.white,
+        color: Theme.of(context).primaryColor,
         padding: EdgeInsets.all(15),
         child: AuthButton(
           onClick: () {

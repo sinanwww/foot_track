@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/player/player_model.dart';
+import 'package:foot_track/utls/resp.dart';
 import 'package:foot_track/utls/widgets/auth_button.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
 import 'package:foot_track/utls/widgets/search_field.dart';
@@ -72,23 +73,11 @@ class _AddTeamPlayerPageState extends State<AddTeamPlayerPage> {
                 ),
                 Expanded(
                   child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      int crossAxisCount = 1;
-                      double childAspectRatio = 4 / 1;
-                      if (constraints.maxWidth > 300) {
-                        childAspectRatio = 3 / 0.8;
-                      }
-                      if (constraints.maxWidth > 700) {
-                        crossAxisCount = 2;
-                      }
-                      if (constraints.maxWidth > 1200) {
-                        crossAxisCount = 3;
-                        childAspectRatio = 5 / 1.2;
-                      }
-                      if (constraints.maxWidth > 2400) {
-                        crossAxisCount = 3;
-                        childAspectRatio = 6 / 1;
-                      }
+                    builder: (context, cst) {
+                      int count = 1;
+                      double ratio = 4 / 1;
+                      ratio = getRatio(cst.maxWidth);
+                      count = getCount(cst.maxWidth);
                       return ValueListenableBuilder<List<PlayerModel>>(
                         valueListenable: _searchHandler!.filteredItemsNotifier,
                         builder: (context, filteredPlayers, _) {
@@ -102,8 +91,9 @@ class _AddTeamPlayerPageState extends State<AddTeamPlayerPage> {
                             itemCount: filteredPlayers.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                                  childAspectRatio: childAspectRatio,
-                                  crossAxisCount: crossAxisCount,
+                                  childAspectRatio: ratio,
+                                  crossAxisCount: count,
+                                  crossAxisSpacing: 5,
                                 ),
                             itemBuilder: (context, index) {
                               final player = filteredPlayers[index];
@@ -130,15 +120,48 @@ class _AddTeamPlayerPageState extends State<AddTeamPlayerPage> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   TextFormField(
+                                                    style: TextStyle(
+                                                      color:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .secondary,
+                                                    ),
+
                                                     keyboardType:
                                                         TextInputType.number,
-                                                    decoration:
-                                                        const InputDecoration(
-                                                          hintText:
-                                                              "Jersey Number",
-                                                          border:
-                                                              OutlineInputBorder(),
+                                                    decoration: InputDecoration(
+                                                      hintText: "Jersey Number",
+                                                      hintStyle: TextStyle(
+                                                        color:
+                                                            Theme.of(context)
+                                                                .colorScheme
+                                                                .secondary,
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .secondary,
                                                         ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              10,
+                                                            ),
+                                                      ),
+                                                      enabledBorder: OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .secondary,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              10,
+                                                            ),
+                                                      ),
+                                                    ),
                                                     controller: jerseyNumberCt,
                                                     validator: (value) {
                                                       if (value == null ||

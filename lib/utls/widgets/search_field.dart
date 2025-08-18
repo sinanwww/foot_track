@@ -47,10 +47,26 @@ class SearchWidget extends StatelessWidget {
       child: TextField(
         controller: controller,
         onChanged: onChanged,
+        style: TextStyle(color: Theme.of(context).colorScheme.secondary),
         decoration: InputDecoration(
           hintText: hintText,
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       ),
     );

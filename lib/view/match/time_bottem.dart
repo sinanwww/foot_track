@@ -5,7 +5,7 @@ import 'package:foot_track/utls/widgets/type_field.dart';
 class TimePickerBottom extends StatelessWidget {
   final Function(TimeOfDay)? onSubmit;
   final TextEditingController controller;
-  
+
   const TimePickerBottom({
     super.key,
     required this.onSubmit,
@@ -21,6 +21,7 @@ class TimePickerBottom extends StatelessWidget {
         }
         return null;
       },
+      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
       readOnly: true,
       onTap: () async {
         final initialTime = TimeOfDay.now();
@@ -29,11 +30,15 @@ class TimePickerBottom extends StatelessWidget {
           initialTime: initialTime,
           builder: (BuildContext context, Widget? child) {
             return Theme(
-              data: ThemeData.light().copyWith(
+              data: Theme.of(context).copyWith(
                 colorScheme: ColorScheme.light(
-                  primary: AppTheam.primary, // Set your theme color
+                  primary: AppColors.primary,
+                  onPrimary: AppColors.white,
+                  surface: Theme.of(context).colorScheme.surface,
+                  onSurface: Theme.of(context).colorScheme.secondary,
                 ),
-                buttonTheme: ButtonThemeData(
+                dialogBackgroundColor: Theme.of(context).colorScheme.surface,
+                buttonTheme: const ButtonThemeData(
                   textTheme: ButtonTextTheme.primary,
                 ),
               ),
@@ -41,7 +46,7 @@ class TimePickerBottom extends StatelessWidget {
             );
           },
         );
-        
+
         if (pickedTime != null) {
           final formattedTime = pickedTime.format(context);
           controller.text = formattedTime;
@@ -50,7 +55,10 @@ class TimePickerBottom extends StatelessWidget {
           }
         }
       },
-      decoration: customDecoretion("Select Time"),
+      decoration: customDecoretion(
+        hintText: "Select Time",
+        fillColor: Theme.of(context).colorScheme.surface,
+      ),
       controller: controller,
     );
   }

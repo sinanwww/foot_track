@@ -1,10 +1,12 @@
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:foot_track/utls/app_theam.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'dart:io' show File;
 
 class AddLogo extends StatefulWidget {
-  final Function(String?)? onImageSelected;
+  final Function(Uint8List?)? onImageSelected;
   const AddLogo({super.key, this.onImageSelected});
 
   @override
@@ -12,16 +14,27 @@ class AddLogo extends StatefulWidget {
 }
 
 class _AddLogoState extends State<AddLogo> {
-  String? _imagePath;
+  Uint8List? _imageData;
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _imagePath = image.path;
-      });
-      widget.onImageSelected?.call(_imagePath);
+    try {
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        setState(() {
+          _imageData = bytes;
+        });
+        widget.onImageSelected?.call(bytes);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error picking image: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -34,20 +47,30 @@ class _AddLogoState extends State<AddLogo> {
           Container(
             height: 150,
             width: 150,
-            child:
-                _imagePath == null
-                    ? Image.asset("assets/icon/logo.png", color: Colors.grey)
-                    : Image.file(File(_imagePath!)),
+            child: _imageData == null
+                ? Image.asset(
+                    "assets/icon/logo.png",
+                    color: Colors.grey,
+                    fit: BoxFit.cover,
+                  )
+                : Image.memory(
+                    _imageData!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      "assets/icon/logo.png",
+                      color: Colors.grey,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
           ),
-
           Positioned(
             bottom: 10,
             right: 10,
             child: InkWell(
               onTap: _pickImage,
               child: CircleAvatar(
-                backgroundColor: AppTheam.primary,
-                child: Icon(Icons.upload, color: AppTheam.primarywhite),
+                backgroundColor: AppColors.primary,
+                child: Icon(Icons.upload, color: AppColors.white),
               ),
             ),
           ),

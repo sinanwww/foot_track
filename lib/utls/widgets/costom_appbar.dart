@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
 import 'package:get/get.dart';
 
@@ -18,15 +17,12 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: () => Get.back(),
           icon: Icon(Icons.arrow_back_ios_new_rounded),
         ),
-        backgroundColor: AppTheam.primarywhite,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
         title: Text(
           title,
-          style: Fontstyle(
-            color: AppTheam.primaryBlack,
-            fontSize: 24,
-            fontWeight: FontWeight.w400,
-          ),
+          style: Fontstyle(fontSize: 24, fontWeight: FontWeight.w400),
         ),
       ),
     );

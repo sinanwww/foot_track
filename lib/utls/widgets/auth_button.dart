@@ -14,7 +14,7 @@ class AuthButton extends StatelessWidget {
       child: Text(
         label,
         style: Fontstyle(
-          color: AppTheam.primarywhite,
+          color: AppColors.white,
           fontSize: 22,
           fontWeight: FontWeight.w400,
         ),
@@ -22,7 +22,7 @@ class AuthButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         fixedSize: Size(400, 50),
-        backgroundColor: AppTheam.primary,
+        backgroundColor: AppColors.primary,
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/widgets/delete_box.dart';
 import 'package:foot_track/view%20model/team_service.dart';
@@ -29,6 +28,7 @@ class PlayerMenu {
       position: menuPosition,
       items: [
         _buildMenuItem(
+          context: context,
           value: PlayerMenuOption.editJersey,
           label: 'Edit Jersey Number',
           onTap:
@@ -41,6 +41,7 @@ class PlayerMenu {
               ),
         ),
         _buildMenuItem(
+          context: context,
           value: PlayerMenuOption.deletePlayer,
           label: 'Delete Player',
           onTap:
@@ -48,6 +49,7 @@ class PlayerMenu {
                 context: context,
                 builder: (BuildContext context) {
                   return DeleteBox(
+                    message: ' Are you sure you want to remove this player"?',
                     deleteOnClick:
                         () => removePlayer(
                           context: context,
@@ -60,6 +62,7 @@ class PlayerMenu {
               ),
         ),
         _buildMenuItem(
+          context: context,
           value: PlayerMenuOption.toggleCaptain,
           label: isCaptain ? 'Remove Captain' : 'Set as Captain',
           onTap:
@@ -81,6 +84,7 @@ class PlayerMenu {
     required PlayerMenuOption value,
     required String label,
     required VoidCallback onTap,
+    required BuildContext context,
   }) {
     return PopupMenuItem<PlayerMenuOption>(
       value: value,
@@ -89,7 +93,7 @@ class PlayerMenu {
         style: Fontstyle(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          color: AppTheam.primaryBlack,
+          color: Theme.of(context).colorScheme.secondary,
         ),
       ),
       onTap: () => Future.delayed(const Duration(milliseconds: 100), onTap),
@@ -237,7 +241,10 @@ class _JerseyNumberDialogState extends State<_JerseyNumberDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(
+            'Cancel',
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+          ),
         ),
         TextButton(
           onPressed: () async {

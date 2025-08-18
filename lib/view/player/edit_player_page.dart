@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/player/player_model.dart';
+import 'package:foot_track/utls/resp.dart';
 import 'package:foot_track/utls/widgets/auth_button.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
 import 'package:foot_track/utls/widgets/type_field.dart';
@@ -20,7 +23,7 @@ class EditPlayerPage extends StatefulWidget {
 }
 
 class _EditPlayerPageState extends State<EditPlayerPage> {
-  String? imagePath;
+  Uint8List? imagePath;
   String? selectedPositin;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController nameCt = TextEditingController();
@@ -29,7 +32,7 @@ class _EditPlayerPageState extends State<EditPlayerPage> {
   @override
   void initState() {
     final data = widget.playerModel;
-    imagePath = data.imagePath;
+    imagePath = data.imageData;
     nameCt.text = data.name;
     dobCt.text = data.dateOfBirth;
     selectedPositin = data.position;
@@ -45,77 +48,86 @@ class _EditPlayerPageState extends State<EditPlayerPage> {
           padding: const EdgeInsets.all(30),
           child: Form(
             key: _formKey,
-            child: Column(
-              children: [
-                // add photo widget
-                AddPhoto(
-                  initialImage: imagePath,
-                  onImageAdded: (path) {
-                    imagePath = path;
-                  },
-                ),
+            child: FormWrap(
+              child: Column(
+                children: [
+                  // add photo widget
+                  AddPhoto(
+                    initialImage: imagePath,
+                    onImageAdded: (path) {
+                      imagePath = path;
+                    },
+                  ),
 
-                SizedBox(height: 50),
-                // input name
-                TypeField(
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter a team name';
-                    }
-                    return null;
-                  },
-                  hintText: "name",
-                  controller: nameCt,
-                ),
-
-                SizedBox(height: 30),
-
-                //for select position
-                SelectPositin(
-                  initialPosition: selectedPositin,
-                  onSelectPosition: (value) {
-                    selectedPositin = value;
-                  },
-                ),
-                SizedBox(height: 30),
-
-                //date of birth picker
-                DatePickerWidget(
-                  controller: dobCt,
-                  onSubmit: (index) {
-                    String formattedDate = DateFormat(
-                      'dd-MM-yyyy',
-                    ).format(index);
-                    dobCt.text = formattedDate;
-                  },
-                ),
-                SizedBox(height: 50),
-                AuthButton(
-                  label: "Update",
-                  onClick: () async {
-                    if (_formKey.currentState!.validate()) {
-                      final player = PlayerModel(
-                        key: widget.playerModel.key,
-                        name: nameCt.text,
-                        imagePath: imagePath,
-                        dateOfBirth: dobCt.text,
-                        position: selectedPositin!,
-                      );
-                      var isSucsess = await PlayerRepo().updatePlayer(player);
-
-                      if (isSucsess) {
-                        nameCt.clear();
-                        imagePath = null;
-                        dobCt.clear();
-                        selectedPositin = null;
-                        Get.off(
-                          () => NavController(index: 3, teamPlayerTabIndex: 1),
-                        );
+                  SizedBox(height: 50),
+                  // input name
+                  TypeField(
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a team name';
                       }
-                    }
-                  },
-                ),
-              ],
+                      return null;
+                    },
+                    hintText: "name",
+                    controller: nameCt,
+                  ),
+
+                  SizedBox(height: 30),
+
+                  //for select position
+                  SelectPositin(
+                    initialPosition: selectedPositin,
+                    onSelectPosition: (value) {
+                      selectedPositin = value;
+                    },
+                  ),
+                  SizedBox(height: 30),
+
+                  //date of birth picker
+                  DatePickerWidget(
+                    controller: dobCt,
+                    onSubmit: (index) {
+                      String formattedDate = DateFormat(
+                        'dd-MM-yyyy',
+                      ).format(index);
+                      dobCt.text = formattedDate;
+                    },
+                  ),
+                  SizedBox(height: 50),
+                  AuthButton(
+                    label: "Update",
+                    onClick: () async {
+                      if (_formKey.currentState!.validate()) {
+                        final player = PlayerModel(
+                          key: widget.playerModel.key,
+                          name: nameCt.text,
+                          imageData: imagePath,
+                          dateOfBirth: dobCt.text,
+                          position: selectedPositin!,
+                        );
+                        var isSucsess = await PlayerRepo().updatePlayer(
+                          key: player.key!,
+                          dateOfBirth: dobCt.text,
+                          imageData: imagePath,
+                          name: nameCt.text,
+                          position: selectedPositin,
+                        );
+
+                        if (isSucsess) {
+                          nameCt.clear();
+                          imagePath = null;
+                          dobCt.clear();
+                          selectedPositin = null;
+                          Get.off(
+                            () =>
+                                NavController(index: 3, teamPlayerTabIndex: 1),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

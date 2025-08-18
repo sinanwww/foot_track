@@ -18,8 +18,8 @@ class PlayerModelAdapter extends TypeAdapter<PlayerModel> {
     };
     return PlayerModel(
       key: fields[0] as String?,
-      imagePath: fields[2] as String?,
       name: fields[1] as String,
+      imageData: fields[2] as Uint8List?,
       position: fields[3] as String,
       dateOfBirth: fields[4] as String,
     );
@@ -34,7 +34,7 @@ class PlayerModelAdapter extends TypeAdapter<PlayerModel> {
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.imagePath)
+      ..write(obj.imageData)
       ..writeByte(3)
       ..write(obj.position)
       ..writeByte(4)

@@ -1,6 +1,7 @@
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:foot_track/utls/app_theam.dart';
+import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/widgets/type_field.dart';
 import 'package:flutter/material.dart';
 
@@ -18,27 +19,38 @@ class DatePickerBottem extends StatelessWidget {
     return TextFormField(
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please select your Date of Birth';
+          return 'Please select your Date';
         }
         return null;
       },
       readOnly: true,
+      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
       onTap: () {
         BottomPicker.date(
           // ignore: deprecated_member_use
           titlePadding: EdgeInsets.only(top: 10),
-          buttonSingleColor: AppTheam.primary,
+          buttonSingleColor: AppColors.primary,
           buttonAlignment: MainAxisAlignment.end,
           dismissable: true,
           dateOrder: DatePickerDateOrder.dmy,
           initialDateTime: DateTime.now(),
           maxDateTime: DateTime(2050),
           minDateTime: DateTime(1900),
-
+backgroundColor: Theme.of(context).colorScheme.surface,
+          closeIconColor: Theme.of(context).colorScheme.secondary,
+          pickerTextStyle: Fontstyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
           onSubmit: onSubmit,
         ).show(context);
       },
-      decoration: customDecoretion("select"),
+      decoration: customDecoretion(
+        hintText: "select",
+      
+        fillColor: Theme.of(context).colorScheme.surface,
+      ),
       controller: controller,
     );
   }

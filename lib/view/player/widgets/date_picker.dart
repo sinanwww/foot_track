@@ -1,6 +1,7 @@
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:foot_track/utls/app_theam.dart';
+import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/widgets/type_field.dart';
 import 'package:flutter/material.dart';
 
@@ -23,22 +24,33 @@ class DatePickerWidget extends StatelessWidget {
         return null;
       },
       readOnly: true,
+      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
       onTap: () {
         BottomPicker.date(
           // ignore: deprecated_member_use
           titlePadding: EdgeInsets.only(top: 10),
-          buttonSingleColor: AppTheam.primary,
+          buttonSingleColor: AppColors.primary,
           buttonAlignment: MainAxisAlignment.end,
           dismissable: true,
           dateOrder: DatePickerDateOrder.dmy,
           initialDateTime: DateTime.now(),
           maxDateTime: DateTime.now(),
           minDateTime: DateTime(1980),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          closeIconColor: Theme.of(context).colorScheme.secondary,
+          pickerTextStyle: Fontstyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
 
           onSubmit: onSubmit,
         ).show(context);
       },
-      decoration: customDecoretion("Date of Birth"),
+      decoration: customDecoretion(
+        fillColor: Theme.of(context).colorScheme.surface,
+        hintText: "Date of Birth",
+      ),
       controller: controller,
     );
   }

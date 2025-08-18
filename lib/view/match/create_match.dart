@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/team/team_model.dart';
 import 'package:foot_track/model/player/player_model.dart';
+import 'package:foot_track/utls/app_theam.dart';
+import 'package:foot_track/utls/font_style.dart';
+import 'package:foot_track/utls/resp.dart';
 import 'package:foot_track/view%20model/match_service.dart';
 import 'package:foot_track/view%20model/player.dart';
 import 'package:foot_track/view%20model/team_service.dart';
@@ -47,135 +50,185 @@ class _CreateMatchPageState extends State<CreateMatchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppbar(title: "Create New Match"),
-      body: ListView(
-        padding: const EdgeInsets.all(30),
-        children: [
-          const Text(
-            "Select Home Team",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(30),
+          child: FormWrap(
+            child: Column(
+              children: [
+                const Text(
+                  "Select Home Team",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                ),
+                const SizedBox(height: 10),
+                _buildTeamSelector(isHome: true),
+                const SizedBox(height: 20),
+                const Text(
+                  "Select Away Team",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                ),
+                const SizedBox(height: 10),
+                _buildTeamSelector(isHome: false),
+                const SizedBox(height: 20),
+                if (homeTeam != null)
+                  _buildLineupSelector(team: homeTeam!, isHome: true),
+                if (homeTeam != null && homeLineup.length == maxLinup)
+                  _buildBenchSelector(team: homeTeam!, isHome: true),
+                if (awayTeam != null)
+                  _buildLineupSelector(team: awayTeam!, isHome: false),
+                if (awayTeam != null && awayLineup.length == maxLinup)
+                  _buildBenchSelector(team: awayTeam!, isHome: false),
+                const SizedBox(height: 20),
+                ArrowButton(
+                  label: "Create Match",
+                  onClick: () async {
+                    if (homeTeam == null || awayTeam == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Please select both home and away teams',
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          margin: EdgeInsets.only(
+                            bottom: 200,
+                            left: 20,
+                            right: 20,
+                          ),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      return;
+                    }
+                    if (homeTeam!.key == awayTeam!.key) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Home and away teams must be different',
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          margin: EdgeInsets.only(
+                            bottom: 200,
+                            left: 20,
+                            right: 20,
+                          ),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      return;
+                    }
+                    if (homeLineup.length != maxLinup ||
+                        awayLineup.length != maxLinup) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Each team must have exactly ${maxLinup.toString()} players in the lineup',
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          margin: const EdgeInsets.only(
+                            bottom: 200,
+                            left: 20,
+                            right: 20,
+                          ),
+                          backgroundColor: Colors.red,
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                      return;
+                    }
+                    final overlappingPlayers = homeLineup.toSet().intersection(
+                      awayLineup.toSet(),
+                    );
+                    if (overlappingPlayers.isNotEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Players cannot be in both home and away lineups',
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          margin: EdgeInsets.only(
+                            bottom: 200,
+                            left: 20,
+                            right: 20,
+                          ),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      return;
+                    }
+                    final overlappingHome = homeLineup.toSet().intersection(
+                      homeBench.toSet(),
+                    );
+                    final overlappingAway = awayLineup.toSet().intersection(
+                      awayBench.toSet(),
+                    );
+                    if (overlappingHome.isNotEmpty ||
+                        overlappingAway.isNotEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Players cannot be in both lineup and bench for the same team',
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          margin: EdgeInsets.only(
+                            bottom: 200,
+                            left: 20,
+                            right: 20,
+                          ),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      return;
+                    }
+                    try {
+                      final matchKey = await _matchService.createMatch(
+                        homeTeamKey: homeTeam!.key!,
+                        awayTeamKey: awayTeam!.key!,
+                        homeLineup: homeLineup,
+                        awayLineup: awayLineup,
+                        date: widget.date,
+                        startTime: widget.startTime,
+                        homeBench: homeBench,
+                        awayBench: awayBench,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Match created successfully'),
+                          behavior: SnackBarBehavior.floating,
+                          margin: EdgeInsets.only(
+                            bottom: 200,
+                            left: 20,
+                            right: 20,
+                          ),
+                          backgroundColor: Colors.green,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      Get.offAll(() => MatchDetailsPage(matchKey: matchKey));
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error creating match: $e'),
+                          behavior: SnackBarBehavior.floating,
+                          margin: const EdgeInsets.only(
+                            bottom: 200,
+                            left: 20,
+                            right: 20,
+                          ),
+                          backgroundColor: Colors.red,
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 10),
-          _buildTeamSelector(isHome: true),
-          const SizedBox(height: 20),
-          const Text(
-            "Select Away Team",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
-          ),
-          const SizedBox(height: 10),
-          _buildTeamSelector(isHome: false),
-          const SizedBox(height: 20),
-          if (homeTeam != null)
-            _buildLineupSelector(team: homeTeam!, isHome: true),
-          if (homeTeam != null && homeLineup.length == maxLinup)
-            _buildBenchSelector(team: homeTeam!, isHome: true),
-          if (awayTeam != null)
-            _buildLineupSelector(team: awayTeam!, isHome: false),
-          if (awayTeam != null && awayLineup.length == maxLinup)
-            _buildBenchSelector(team: awayTeam!, isHome: false),
-          const SizedBox(height: 20),
-          ArrowButton(
-            label: "Create Match",
-            onClick: () async {
-              if (homeTeam == null || awayTeam == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please select both home and away teams'),
-                    behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.only(bottom: 200, left: 20, right: 20),
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-                return;
-              }
-              if (homeTeam!.key == awayTeam!.key) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Home and away teams must be different'),
-                    behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.only(bottom: 200, left: 20, right: 20),
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-                return;
-              }
-              if (homeLineup.length != maxLinup || awayLineup.length != maxLinup) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Each team must have exactly ${maxLinup.toString()} players in the lineup',
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    margin: const EdgeInsets.only(bottom: 200, left: 20, right: 20),
-                    backgroundColor: Colors.red,
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-                return;
-              }
-              final overlappingPlayers = homeLineup.toSet().intersection(awayLineup.toSet());
-              if (overlappingPlayers.isNotEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Players cannot be in both home and away lineups'),
-                    behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.only(bottom: 200, left: 20, right: 20),
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-                return;
-              }
-              final overlappingHome = homeLineup.toSet().intersection(homeBench.toSet());
-              final overlappingAway = awayLineup.toSet().intersection(awayBench.toSet());
-              if (overlappingHome.isNotEmpty || overlappingAway.isNotEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Players cannot be in both lineup and bench for the same team'),
-                    behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.only(bottom: 200, left: 20, right: 20),
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-                return;
-              }
-              try {
-                final matchKey = await _matchService.createMatch(
-                  homeTeamKey: homeTeam!.key!,
-                  awayTeamKey: awayTeam!.key!,
-                  homeLineup: homeLineup,
-                  awayLineup: awayLineup,
-                  date: widget.date,
-                  startTime: widget.startTime,
-                  homeBench: homeBench,
-                  awayBench: awayBench,
-                );
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Match created successfully'),
-                    behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.only(bottom: 200, left: 20, right: 20),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-                Get.offAll(() => MatchDetailsPage(matchKey: matchKey));
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Error creating match: $e'),
-                    behavior: SnackBarBehavior.floating,
-                    margin: const EdgeInsets.only(bottom: 200, left: 20, right: 20),
-                    backgroundColor: Colors.red,
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-              }
-            },
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -191,24 +244,27 @@ class _CreateMatchPageState extends State<CreateMatchPage> {
           return const Text('No teams available');
         }
         final teams = snapshot.data!;
-        final availableTeams = teams.where((team) {
-          if (isHome && awayTeam != null) {
-            return team.key != awayTeam!.key;
-          } else if (!isHome && homeTeam != null) {
-            return team.key != homeTeam!.key;
-          }
-          return true;
-        }).toList();
+        final availableTeams =
+            teams.where((team) {
+              if (isHome && awayTeam != null) {
+                return team.key != awayTeam!.key;
+              } else if (!isHome && homeTeam != null) {
+                return team.key != homeTeam!.key;
+              }
+              return true;
+            }).toList();
         return DropdownButton<TeamModel>(
           isExpanded: true,
           hint: Text(isHome ? 'Select Home Team' : 'Select Away Team'),
           value: isHome ? homeTeam : awayTeam,
-          items: availableTeams.map((team) {
-            return DropdownMenuItem<TeamModel>(
-              value: team,
-              child: Text(team.name ?? 'Unnamed Team'),
-            );
-          }).toList(),
+          style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+          items:
+              availableTeams.map((team) {
+                return DropdownMenuItem<TeamModel>(
+                  value: team,
+                  child: Text(team.name ?? 'Unnamed Team'),
+                );
+              }).toList(),
           onChanged: (team) {
             setState(() {
               if (isHome) {
@@ -247,33 +303,48 @@ class _CreateMatchPageState extends State<CreateMatchPage> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
             }
-            if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+            if (snapshot.hasError ||
+                !snapshot.hasData ||
+                snapshot.data!.isEmpty) {
               return const Text('No players available');
             }
             final players = snapshot.data!;
             final currentLineup = isHome ? homeLineup : awayLineup;
             return Wrap(
               spacing: 8,
-              children: players.map((player) {
-                final isSelected = currentLineup.contains(player.key);
-                final isInOtherLineup = otherLineup.contains(player.key);
-                return ChoiceChip(
-                  label: Text(player.name),
-                  selected: isSelected,
-                  disabledColor: isInOtherLineup ? Colors.grey : null,
-                  onSelected: isInOtherLineup
-                      ? null
-                      : (selected) {
-                          setState(() {
-                            if (selected && currentLineup.length < maxLinup!) {
-                              currentLineup.add(player.key!);
-                            } else if (!selected) {
-                              currentLineup.remove(player.key!);
-                            }
-                          });
-                        },
-                );
-              }).toList(),
+              children:
+                  players.map((player) {
+                    final isSelected = currentLineup.contains(player.key);
+                    final isInOtherLineup = otherLineup.contains(player.key);
+                    return ChoiceChip(
+                      selectedColor: AppColors.primary,
+                      label: Text(
+                        player.name,
+                        style: Fontstyle(
+                          color:
+                              isSelected
+                                  ? Colors.white
+                                  : Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                      selected: isSelected,
+
+                      disabledColor: isInOtherLineup ? Colors.grey : null,
+                      onSelected:
+                          isInOtherLineup
+                              ? null
+                              : (selected) {
+                                setState(() {
+                                  if (selected &&
+                                      currentLineup.length < maxLinup!) {
+                                    currentLineup.add(player.key!);
+                                  } else if (!selected) {
+                                    currentLineup.remove(player.key!);
+                                  }
+                                });
+                              },
+                    );
+                  }).toList(),
             );
           },
         ),
@@ -308,40 +379,55 @@ class _CreateMatchPageState extends State<CreateMatchPage> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
             }
-            if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+            if (snapshot.hasError ||
+                !snapshot.hasData ||
+                snapshot.data!.isEmpty) {
               return const Text('No players available for bench');
             }
             final players = snapshot.data!;
             return Wrap(
               spacing: 8,
-              children: players.map((player) {
-                final isSelected = currentBench.contains(player.key);
-                final isInLineup = currentLineup.contains(player.key);
-                final isInOtherLineup = otherLineup.contains(player.key);
-                final isInOtherBench = otherBench.contains(player.key);
-                return ChoiceChip(
-                  label: Text(player.name),
-                  selected: isSelected,
-                  disabledColor: (isInLineup || isInOtherLineup || isInOtherBench) ? Colors.grey : null,
-                  onSelected: (isInLineup || isInOtherLineup || isInOtherBench)
-                      ? null
-                      : (selected) {
-                          setState(() {
-                            if (selected) {
-                              currentBench.add(player.key!);
-                            } else {
-                              currentBench.remove(player.key!);
-                            }
-                          });
-                        },
-                );
-              }).toList(),
+              children:
+                  players.map((player) {
+                    final isSelected = currentBench.contains(player.key);
+                    final isInLineup = currentLineup.contains(player.key);
+                    final isInOtherLineup = otherLineup.contains(player.key);
+                    final isInOtherBench = otherBench.contains(player.key);
+                    return ChoiceChip(
+                      selectedColor: AppColors.primary,
+                      label: Text(
+                        player.name,
+                        style: Fontstyle(
+                          color:
+                              isSelected
+                                  ? Colors.white
+                                  : Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                      selected: isSelected,
+
+                      disabledColor:
+                          (isInLineup || isInOtherLineup || isInOtherBench)
+                              ? Colors.grey
+                              : null,
+                      onSelected:
+                          (isInLineup || isInOtherLineup || isInOtherBench)
+                              ? null
+                              : (selected) {
+                                setState(() {
+                                  if (selected) {
+                                    currentBench.add(player.key!);
+                                  } else {
+                                    currentBench.remove(player.key!);
+                                  }
+                                });
+                              },
+                    );
+                  }).toList(),
             );
           },
         ),
-        Text(
-          "Bench Selected: ${currentBench.length}",
-        ),
+        Text("Bench Selected: ${currentBench.length}"),
       ],
     );
   }

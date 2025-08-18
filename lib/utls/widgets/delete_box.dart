@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
-import 'package:get/get.dart';
 
 class DeleteBox extends StatelessWidget {
   final Function() deleteOnClick;
-  const DeleteBox({super.key, required this.deleteOnClick});
+  final Function()? cancelOnClick;
+  final String message;
+  const DeleteBox({
+    super.key,
+    required this.deleteOnClick,
+    required this.message,
+    this.cancelOnClick,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,18 +23,23 @@ class DeleteBox extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Text(
-              "Delete",
-              style: Fontstyle(fontSize: 24, fontWeight: FontWeight.w500),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                message,
+                textAlign: TextAlign.center,
+                style: Fontstyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
             ),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 dialogBtn(
                   label: "cancel",
                   onTap: () {
-                    Get.back();
+                    Navigator.of(context).pop();
                   },
                 ),
                 SizedBox(width: 15),
@@ -55,14 +66,8 @@ class DeleteBox extends StatelessWidget {
     onPressed: onTap,
     child: Text(label),
     style: ElevatedButton.styleFrom(
-      fixedSize: Size(100, 50),
-
-      side: BorderSide(
-        color: isOutlined == true ? AppTheam.primary : Colors.red,
-      ),
-      foregroundColor:
-          isOutlined == true ? AppTheam.primary : AppTheam.primarywhite,
-      backgroundColor: isOutlined == true ? AppTheam.primarywhite : Colors.red,
+      foregroundColor: isOutlined == true ? Colors.grey[700] : AppColors.white,
+      backgroundColor: isOutlined == true ? Colors.grey[300] : Colors.red,
     ),
   );
 }

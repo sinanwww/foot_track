@@ -1,11 +1,12 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foot_track/utls/font_style.dart';
 
 class MatchCard extends StatelessWidget {
-  final String? homeTeamLogoPath;
-  final String? awayTeamLogoPath;
+  final Uint8List? homeTeamLogoPath;
+  final Uint8List? awayTeamLogoPath;
   final String displayDate;
   final String homeTeam;
   final int homeScore;
@@ -30,15 +31,18 @@ class MatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Theme.of(context).cardColor,
       elevation: 4,
+
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          padding: EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(displayDate, style: Fontstyle(fontSize: 10)),
               SizedBox(height: 5),
@@ -47,7 +51,7 @@ class MatchCard extends StatelessWidget {
                 teamName: homeTeam,
                 score: homeScore.toString(),
               ),
-              Spacer(),
+              SizedBox(height: 10),
               cardRow(
                 imagePath: awayTeamLogoPath!,
                 teamName: awayTeam,
@@ -62,12 +66,12 @@ class MatchCard extends StatelessWidget {
 }
 
 Widget cardRow({
-  required String imagePath,
+  required Uint8List imagePath,
   required String teamName,
   required String score,
 }) => Row(
   children: [
-    Image.file(File(imagePath), width: 20),
+    Image.memory(imagePath, width: 20, fit: BoxFit.fill),
     SizedBox(width: 10),
     Text(teamName),
     Spacer(),

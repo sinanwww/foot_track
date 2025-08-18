@@ -12,6 +12,7 @@ import 'package:foot_track/view%20model/match_service.dart';
 import 'package:foot_track/view%20model/team_service.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
 class MatchDetailsPage extends StatefulWidget {
   final String matchKey;
   const MatchDetailsPage({super.key, required this.matchKey});
@@ -78,6 +79,39 @@ class _MatchDetailsPageState extends State<MatchDetailsPage> {
       initialDate: selectedStartTime ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary:
+                  AppColors
+                      .primary, // Primary color for headers and selected date
+              onPrimary: AppColors.white, // Text/icon color on primary
+              surface:
+                  Theme.of(
+                    context,
+                  ).scaffoldBackgroundColor, // Dialog background
+              onSurface:
+                  Theme.of(context).brightness == Brightness.light
+                      ? AppColors.black
+                      : AppColors.white, // Text/icon color on surface
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.secondary, // Button text color
+                textStyle: Fontstyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.secondary,
+                ),
+              ),
+            ),
+            // ignore: deprecated_member_use
+            dialogBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          ),
+          child: child!,
+        );
+      },
     );
     if (pickedDate != null) {
       final TimeOfDay? pickedTime = await showTimePicker(
@@ -85,6 +119,37 @@ class _MatchDetailsPageState extends State<MatchDetailsPage> {
         initialTime: TimeOfDay.fromDateTime(
           selectedStartTime ?? DateTime.now(),
         ),
+        builder: (BuildContext context, Widget? child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: AppColors.primary, // Primary color for time picker
+                onPrimary: AppColors.white, // Text/icon color on primary
+                surface:
+                    Theme.of(
+                      context,
+                    ).scaffoldBackgroundColor, // Dialog background
+                onSurface:
+                    Theme.of(context).brightness == Brightness.light
+                        ? AppColors.black
+                        : AppColors.white, // Text/icon color on surface
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.secondary, // Button text color
+                  textStyle: Fontstyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.secondary,
+                  ),
+                ),
+              ),
+              // ignore: deprecated_member_use
+              dialogBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            ),
+            child: child!,
+          );
+        },
       );
       if (pickedTime != null && mounted) {
         setState(() {
@@ -103,9 +168,7 @@ class _MatchDetailsPageState extends State<MatchDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheam.primarywhite,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 2,
         actions: [
           ElevatedButton(
@@ -121,145 +184,190 @@ class _MatchDetailsPageState extends State<MatchDetailsPage> {
           const SizedBox(width: 15),
         ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : match == null
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : match == null
               ? const Center(child: Text('Match not found'))
               : ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          homeTeam?.name ?? 'Home',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        const SizedBox(width: 10),
-                        SizedBox(
-                          width: 50,
-                          child: TextField(
-                            controller: homeScoreController,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            decoration: customDecoretion("0"),
+                padding: const EdgeInsets.all(20),
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        homeTeam?.name ?? 'Home',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(width: 10),
+                      SizedBox(
+                        width: 50,
+                        child: TextField(
+                          controller: homeScoreController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          decoration: customDecoretion(
+                            fillColor:
+                                Theme.of(context).colorScheme.onSecondary,
+                            hintText: "0",
                           ),
                         ),
-                        const Text(" - ", style: TextStyle(fontSize: 20)),
-                        SizedBox(
-                          width: 50,
-                          child: TextField(
-                            controller: awayScoreController,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            decoration: customDecoretion("0"),
+                      ),
+                      const Text(" - ", style: TextStyle(fontSize: 20)),
+                      SizedBox(
+                        width: 50,
+                        child: TextField(
+                          controller: awayScoreController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          decoration: customDecoretion(
+                            fillColor:
+                                Theme.of(context).colorScheme.onSecondary,
+                            hintText: "0",
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Text(
-                          awayTeam?.name ?? 'Away',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      ],
-                    ),
-                    const Divider(),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Match Details",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Match Description',
-                        border: OutlineInputBorder(),
                       ),
-                      maxLines: 3,
-                    ),
-                    const SizedBox(height: 10),
-                    ListTile(
-                      title: Text(
-                        selectedStartTime == null
-                            ? 'Select Start Time'
-                            : DateFormat('yyyy-MM-dd HH:mm').format(selectedStartTime!),
-                        style: Fontstyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: AppTheam.primaryBlack,
-                        ),
+                      const SizedBox(width: 10),
+                      Text(
+                        awayTeam?.name ?? 'Away',
+                        style: const TextStyle(fontSize: 20),
                       ),
-                      trailing: const Icon(Icons.calendar_today),
-                      onTap: () => _selectStartTime(context),
+                    ],
+                  ),
+                  const Divider(),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Match Details",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: descriptionController,
+                    style: Fontstyle(
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
-                    const Divider(),
-                    const SizedBox(height: 20),
-                    Text(
-                      "${homeTeam?.name ?? 'Home'} Lineup",
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    decoration: InputDecoration(
+                      labelText: 'Match Description',
+                      labelStyle: Fontstyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    const SizedBox(height: 20),
-                    LineupList(
-                      lineup: match!.homeLineup ?? [],
-                      team: homeTeam,
-                      isHome: true,
-                      match: match!,
-                      onGoalUpdated: _loadMatch,
-                      onCardsUpdated: _loadMatch,
-                      onSubstitutionUpdated: _loadMatch,
-                      updateScoreControllers: () {
-                        setState(() {
-                          homeScoreController.text = (match!.homeScore ?? 0).toString();
-                        });
-                      },
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 10),
+                  ListTile(
+                    title: Text(
+                      selectedStartTime == null
+                          ? 'Select Start Time'
+                          : DateFormat(
+                            'yyyy-MM-dd HH:mm',
+                          ).format(selectedStartTime!),
+                      style: Fontstyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      "${homeTeam?.name ?? 'Home'} Bench",
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    trailing: Icon(
+                      Icons.calendar_today,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
-                    const SizedBox(height: 20),
-                    BenchList(bench: match!.homeBench ?? [], team: homeTeam),
-                    const SizedBox(height: 20),
-                    Text(
-                      "${awayTeam?.name ?? 'Away'} Lineup",
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    onTap: () => _selectStartTime(context),
+                  ),
+                  const Divider(),
+                  const SizedBox(height: 20),
+                  Text(
+                    "${homeTeam?.name ?? 'Home'} Lineup",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 20),
-                    LineupList(
-                      lineup: match!.awayLineup ?? [],
-                      team: awayTeam,
-                      isHome: false,
-                      match: match!,
-                      onGoalUpdated: _loadMatch,
-                      onCardsUpdated: _loadMatch,
-                      onSubstitutionUpdated: _loadMatch,
-                      updateScoreControllers: () {
-                        setState(() {
-                          awayScoreController.text = (match!.awayScore ?? 0).toString();
-                        });
-                      },
+                  ),
+                  const SizedBox(height: 20),
+                  LineupList(
+                    lineup: match!.homeLineup ?? [],
+                    team: homeTeam,
+                    isHome: true,
+                    match: match!,
+                    onGoalUpdated: _loadMatch,
+                    onCardsUpdated: _loadMatch,
+                    onSubstitutionUpdated: _loadMatch,
+                    updateScoreControllers: () {
+                      setState(() {
+                        homeScoreController.text =
+                            (match!.homeScore ?? 0).toString();
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "${homeTeam?.name ?? 'Home'} Bench",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      "${awayTeam?.name ?? 'Away'} Bench",
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  BenchList(bench: match!.homeBench ?? [], team: homeTeam),
+                  const SizedBox(height: 20),
+                  Text(
+                    "${awayTeam?.name ?? 'Away'} Lineup",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 20),
-                    BenchList(bench: match!.awayBench ?? [], team: awayTeam),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Substitutions",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  LineupList(
+                    lineup: match!.awayLineup ?? [],
+                    team: awayTeam,
+                    isHome: false,
+                    match: match!,
+                    onGoalUpdated: _loadMatch,
+                    onCardsUpdated: _loadMatch,
+                    onSubstitutionUpdated: _loadMatch,
+                    updateScoreControllers: () {
+                      setState(() {
+                        awayScoreController.text =
+                            (match!.awayScore ?? 0).toString();
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "${awayTeam?.name ?? 'Away'} Bench",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 10),
-                    SubstitutionList(
-                      substitutions: match!.substitutions ?? [],
-                      homeTeam: homeTeam,
-                      awayTeam: awayTeam,
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 20),
+                  BenchList(bench: match!.awayBench ?? [], team: awayTeam),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Substitutions",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  SubstitutionList(
+                    substitutions: match!.substitutions ?? [],
+                    homeTeam: homeTeam,
+                    awayTeam: awayTeam,
+                  ),
+                ],
+              ),
       floatingActionButton: ElevatedButton(
         onPressed: () async {
           final homeScore = int.tryParse(homeScoreController.text) ?? 0;
@@ -299,7 +407,7 @@ class _MatchDetailsPageState extends State<MatchDetailsPage> {
         },
         child: const Text("Update Match"),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheam.primary,
+          backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
         ),
       ),

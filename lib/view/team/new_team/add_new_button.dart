@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foot_track/utls/font_style.dart';
 
 class AddNewButton extends StatelessWidget {
@@ -15,12 +16,14 @@ class AddNewButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ScreenWidth = MediaQuery.of(context).size.width;
     return InkWell(
       onTap: onClick,
       child: Container(
-        padding: EdgeInsets.all(10),
-        width: 360,
-        height: 140,
+      
+        // padding: EdgeInsets.all(10),
+        // width: 360,
+        // height: 140,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           image: DecorationImage(fit: BoxFit.fill, image: AssetImage(image)),
@@ -33,13 +36,13 @@ class AddNewButton extends StatelessWidget {
               color: Colors.black54,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     label,
                     style: Fontstyle(
                       color: Colors.white,
-                      fontSize: 24,
+                      fontSize: ScreenWidth < 1200 ? 12.sp : 10.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -47,7 +50,7 @@ class AddNewButton extends StatelessWidget {
                   Icon(
                     Icons.arrow_forward_rounded,
                     color: Colors.white,
-                    size: 30,
+                    size: ScreenWidth < 1200 ? 12.w : 10.w,
                   ),
                 ],
               ),

@@ -41,6 +41,9 @@ dependencies:
   image_picker: ^1.1.2
   uuid: ^4.5.1
   bottom_picker: ^4.0.0
+  smooth_page_indicator: ^1.2.1
+  flutter_screenutil: ^5.9.3
+  carousel_slider: ^5.1.1
 
 dev_dependencies:
   

@@ -92,7 +92,9 @@ class LineupList extends StatelessWidget {
                                   color:
                                       isSentOff
                                           ? Colors.grey
-                                          : AppTheam.primaryBlack,
+                                          : Theme.of(
+                                            context,
+                                          ).colorScheme.secondary,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -103,7 +105,7 @@ class LineupList extends StatelessWidget {
                                   color:
                                       isSentOff
                                           ? Colors.grey
-                                          : AppTheam.secondoryText,
+                                          : AppColors.secondary,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -156,13 +158,21 @@ class LineupList extends StatelessWidget {
                                                   updateScoreControllers();
                                                 },
                                               ),
-                                      child: const Row(
+                                      child: Row(
                                         children: [
                                           Icon(
                                             Icons.sports_soccer,
                                             color: Colors.green,
                                           ),
-                                          Text("Goal"),
+                                          Text(
+                                            "Goal",
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.secondary,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -179,13 +189,21 @@ class LineupList extends StatelessWidget {
                                                 onSuccess:
                                                     onSubstitutionUpdated,
                                               ),
-                                      child: const Row(
+                                      child: Row(
                                         children: [
                                           Icon(
                                             Icons.swap_horiz_rounded,
                                             color: Colors.blue,
                                           ),
-                                          Text("sub"),
+                                          Text(
+                                            "sub",
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.secondary,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -208,7 +226,15 @@ class LineupList extends StatelessWidget {
                                               color: Colors.grey,
                                             ),
                                           ),
-                                          Text("Card"),
+                                          Text(
+                                            "Card",
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.secondary,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),

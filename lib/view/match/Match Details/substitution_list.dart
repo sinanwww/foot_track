@@ -50,7 +50,7 @@ class SubstitutionList extends StatelessWidget {
               title: Text(
                 '${outPlayer?.name ?? "Unknown"} → ${inPlayer?.name ?? "Unknown"}',
                 style: Fontstyle(
-                  color: AppTheam.primaryBlack,
+                  color: AppColors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),
@@ -58,7 +58,7 @@ class SubstitutionList extends StatelessWidget {
               subtitle: Text(
                 DateFormat('HH:mm').format(time),
                 style: Fontstyle(
-                  color: AppTheam.secondoryText,
+                  color: AppColors.secondary,
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                 ),

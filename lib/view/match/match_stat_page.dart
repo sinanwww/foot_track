@@ -95,7 +95,7 @@ class _MatchStatPageState extends State<MatchStatPage> {
             duration: Duration(seconds: 2),
           ),
         );
-        Get.offAll(() => NavController(index: 1));
+        Get.offAll(() => NavController(index: 1, matchTourTabIndex: 0));
       }
     } catch (e) {
       if (mounted) {
@@ -115,13 +115,11 @@ class _MatchStatPageState extends State<MatchStatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 244, 244, 244),
       appBar: AppBar(
         title: Text(
           formatedDate ?? '',
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
         elevation: 2,
         actions: [
           IconButton(
@@ -137,7 +135,10 @@ class _MatchStatPageState extends State<MatchStatPage> {
                 () => showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return DeleteBox(deleteOnClick: deleteMatch);
+                    return DeleteBox(
+                      message: 'Are you sure you want to delete "This Match"?',
+                      deleteOnClick: deleteMatch,
+                    );
                   },
                 ),
             icon: const Icon(Icons.delete, color: Colors.red),
@@ -177,21 +178,61 @@ class _MatchStatPageState extends State<MatchStatPage> {
                       ),
                     ],
                   ),
-                  const Divider(),
+                  const Divider(color: AppColors.grey),
+                  Text(
+                    match!.description == ""
+                        ? 'No Description'
+                        : match!.description ?? "",
+                  ),
+                  const Divider(color: AppColors.grey),
                   const SizedBox(height: 20),
+                  // Goal Scorers
+                  const Text(
+                    "Goal Scorers",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildGoalScorersList(match!.goalScorers ?? []),
+                  const SizedBox(height: 20),
+                  // Home Lineup
                   const Text(
                     "Home Lineup",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   _buildLineupList(match!.homeLineup ?? [], homeTeam),
                   const SizedBox(height: 20),
+                  // Home Bench
+                  const Text(
+                    "Home Bench",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildLineupList(match!.homeBench ?? [], homeTeam),
+                  const SizedBox(height: 20),
+                  // Away Lineup
                   const Text(
                     "Away Lineup",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   _buildLineupList(match!.awayLineup ?? [], awayTeam),
+                  const SizedBox(height: 20),
+                  // Away Bench
+                  const Text(
+                    "Away Bench",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildLineupList(match!.awayBench ?? [], awayTeam),
+                  const SizedBox(height: 20),
+                  // Substitutions
+                  const Text(
+                    "Substitutions",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildSubstitutionsList(match!.substitutions ?? []),
                 ],
               ),
     );
@@ -224,7 +265,7 @@ class _MatchStatPageState extends State<MatchStatPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CircleAvatar(
-                          backgroundColor: Colors.green,
+                          backgroundColor: Colors.blue,
                           child: Text(
                             jerseyNumber,
                             style: const TextStyle(color: Colors.white),
@@ -237,7 +278,7 @@ class _MatchStatPageState extends State<MatchStatPage> {
                             Text(
                               player.name,
                               style: Fontstyle(
-                                color: AppTheam.primaryBlack,
+                                color: Theme.of(context).colorScheme.secondary,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -245,7 +286,7 @@ class _MatchStatPageState extends State<MatchStatPage> {
                             Text(
                               player.position,
                               style: Fontstyle(
-                                color: AppTheam.secondoryText,
+                                color: AppColors.secondary,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -254,12 +295,287 @@ class _MatchStatPageState extends State<MatchStatPage> {
                         ),
                       ],
                     ),
-                    const Divider(),
+                    const Divider(color: AppColors.secondary),
                   ],
                 );
               },
             );
           },
         );
+  }
+
+  Widget _buildGoalScorersList(List<Map<String, dynamic>> goalScorers) {
+    if (goalScorers.isEmpty) {
+      return const Text("No goals scored");
+    }
+
+    // Group goal scorers by team
+    final homeGoals =
+        goalScorers
+            .where(
+              (goal) =>
+                  (match!.homeLineup ?? []).contains(goal['playerKey']) ||
+                  (match!.substitutions ?? []).any(
+                    (sub) =>
+                        sub['outPlayerKey'] == goal['playerKey'] &&
+                        sub['isHome'],
+                  ),
+            )
+            .toList();
+    final awayGoals =
+        goalScorers
+            .where(
+              (goal) =>
+                  (match!.awayLineup ?? []).contains(goal['playerKey']) ||
+                  (match!.substitutions ?? []).any(
+                    (sub) =>
+                        sub['outPlayerKey'] == goal['playerKey'] &&
+                        !sub['isHome'],
+                  ),
+            )
+            .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Home Team Goals
+        if (homeGoals.isNotEmpty) ...[
+          Text(
+            "${homeTeam?.name ?? 'Home'} Goals",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 5),
+          ...homeGoals
+              .map((goal) => _buildGoalScorerItem(goal, homeTeam))
+              .toList(),
+          const SizedBox(height: 10),
+        ],
+        // Away Team Goals
+        if (awayGoals.isNotEmpty) ...[
+          Text(
+            "${awayTeam?.name ?? 'Away'} Goals",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 5),
+          ...awayGoals
+              .map((goal) => _buildGoalScorerItem(goal, awayTeam))
+              .toList(),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildGoalScorerItem(Map<String, dynamic> goal, TeamModel? team) {
+    final playerKey = goal['playerKey'] as String;
+    final time = goal['time'] as DateTime?;
+    return FutureBuilder<PlayerModel?>(
+      future: _playerRepo.getPlayer(playerKey),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const ListTile(title: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const ListTile(title: Text('Player not found'));
+        }
+        final player = snapshot.data!;
+        final jerseyNumber = team?.teamPlayer?[playerKey]?.toString() ?? 'N/A';
+        final timeString =
+            time != null ? DateFormat('mm:ss').format(time) : 'N/A';
+        return Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.green,
+                  child: Text(
+                    jerseyNumber,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      player.name,
+                      style: Fontstyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    Text(
+                      'Goal at $timeString',
+                      style: Fontstyle(
+                        color: AppColors.secondary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const Divider(color: AppColors.secondary),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSubstitutionsList(List<Map<String, dynamic>> substitutions) {
+    if (substitutions.isEmpty) {
+      return const Text("No substitutions made");
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: substitutions.length,
+      itemBuilder: (context, index) {
+        final sub = substitutions[index];
+        final outPlayerKey = sub['outPlayerKey'] as String;
+        final inPlayerKey = sub['inPlayerKey'] as String;
+        final time = sub['time'] as DateTime?;
+        final isHome = sub['isHome'] as bool;
+        final timeString =
+            time != null ? DateFormat('mm:ss').format(time) : 'N/A';
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isHome
+                  ? "${homeTeam?.name ?? 'Home'} Substitution"
+                  : "${awayTeam?.name ?? 'Away'} Substitution",
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 5),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: FutureBuilder<PlayerModel?>(
+                    future: _playerRepo.getPlayer(outPlayerKey),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const ListTile(
+                          title: CircularProgressIndicator(),
+                        );
+                      }
+                      if (snapshot.hasError || !snapshot.hasData) {
+                        return const ListTile(title: Text('Player not found'));
+                      }
+                      final player = snapshot.data!;
+                      final jerseyNumber =
+                          (isHome
+                                  ? homeTeam?.teamPlayer
+                                  : awayTeam?.teamPlayer)?[outPlayerKey]
+                              ?.toString() ??
+                          'N/A';
+                      return Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.red,
+                            child: Text(
+                              jerseyNumber,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                player.name,
+                                style: Fontstyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              Text(
+                                'Out at $timeString',
+                                style: Fontstyle(
+                                  color: AppColors.secondary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 20),
+                const Icon(Icons.arrow_forward, color: AppColors.secondary),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: FutureBuilder<PlayerModel?>(
+                    future: _playerRepo.getPlayer(inPlayerKey),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const ListTile(
+                          title: CircularProgressIndicator(),
+                        );
+                      }
+                      if (snapshot.hasError || !snapshot.hasData) {
+                        return const ListTile(title: Text('Player not found'));
+                      }
+                      final player = snapshot.data!;
+                      final jerseyNumber =
+                          (isHome
+                                  ? homeTeam?.teamPlayer
+                                  : awayTeam?.teamPlayer)?[inPlayerKey]
+                              ?.toString() ??
+                          'N/A';
+                      return Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.green,
+                            child: Text(
+                              jerseyNumber,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                player.name,
+                                style: Fontstyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              Text(
+                                'In at $timeString',
+                                style: Fontstyle(
+                                  color: AppColors.secondary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const Divider(color: AppColors.secondary),
+          ],
+        );
+      },
+    );
   }
 }

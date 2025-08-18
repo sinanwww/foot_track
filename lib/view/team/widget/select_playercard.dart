@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/player/player_model.dart';
 import 'package:foot_track/utls/app_theam.dart';
@@ -25,49 +24,36 @@ class _SelectPlayerCardState extends State<SelectPlayerCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: widget.onClick,
-      // showModalBottomSheet(
-      //   useSafeArea: true,
-      //   isScrollControlled: true,
-      //   enableDrag: false,
-      //   context: context,
-      //   builder: (context) {
-      //     return AddPalyerSheet(
-      //       playerKey: playerModel.key!,
-      //       existingJerseyNumbers:
-      //           teamRepo.teamPlayerList.value.map((e) => e.jercyNo).toList(),
-      //       onPlayerAdded: (TeamPlayer teamPlayer) {
-      //         teamRepo.addTeamPlayer(teamPlayer);
-      //       },
-      //     );
-      //   },
-      // );
 
-      // showAboutDialog(
-      //   context: context,
-      //   children: [
-      //     TextField(controller: JCt),
-      //     IconButton(onPressed: () {}, icon: Icon(Icons.add_box)),
-      //   ],
-      // );
-      // },
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 8),
-        color: AppTheam.primarywhite,
-        child: ListTile(
-          horizontalTitleGap: 20,
-          leading: CircleAvatar(
-            backgroundImage:
-                widget.playerModel.imagePath!.isNotEmpty
-                    ? FileImage(File(widget.playerModel.imagePath!))
-                    : null,
-            child:
-                widget.playerModel.imagePath!.isEmpty
-                    ? const Icon(Icons.person)
-                    : null,
+
+        child: Center(
+          child: ListTile(
+            horizontalTitleGap: 20,
+            leading: CircleAvatar(
+              backgroundImage:
+                  widget.playerModel.imageData!.isNotEmpty
+                      ? MemoryImage(widget.playerModel.imageData!)
+                      : null,
+              child:
+                  widget.playerModel.imageData!.isEmpty
+                      ? const Icon(Icons.person)
+                      : null,
+            ),
+            title: Text(
+              widget.playerModel.name,
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+            ),
+            subtitle: Text(
+              widget.playerModel.position,
+              style: TextStyle(color: AppColors.secondary),
+            ),
+            trailing: Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
           ),
-          title: Text(widget.playerModel.name),
-          subtitle: Text(widget.playerModel.position),
-          trailing: const Icon(Icons.arrow_forward_ios_rounded),
         ),
       ),
     );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/widgets/type_field.dart';
 
 class SelectPositin extends StatefulWidget {
@@ -30,9 +29,12 @@ class _SelectPositinState extends State<SelectPositin> {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<Positions>(
-      decoration: customDecoretion("Select position"),
+      decoration: customDecoretion(
+        fillColor: Theme.of(context).colorScheme.surface,
+        hintText: "Select position",
+      ),
       isExpanded: true,
-      style: const TextStyle(color: AppTheam.primaryBlack),
+      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
       icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 24),
       value: selectedPosition,
       items:

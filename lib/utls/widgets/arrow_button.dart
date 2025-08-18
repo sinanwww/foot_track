@@ -42,10 +42,10 @@ class ArrowButton extends StatelessWidget {
       ),
 
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppTheam.primary,
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        fixedSize: Size(400, 50),
+        // fixedSize: Size(400, 50),
       ),
     );
   }

@@ -20,7 +20,7 @@ class TeamModelAdapter extends TypeAdapter<TeamModel> {
       key: fields[0] as String?,
       name: fields[1] as String?,
       teamPlayer: (fields[2] as Map?)?.cast<String, int>(),
-      logoimagePath: fields[3] as String?,
+      logoImage: fields[3] as Uint8List?,
       captainKey: fields[4] as String?,
     );
   }
@@ -36,7 +36,7 @@ class TeamModelAdapter extends TypeAdapter<TeamModel> {
       ..writeByte(2)
       ..write(obj.teamPlayer)
       ..writeByte(3)
-      ..write(obj.logoimagePath)
+      ..write(obj.logoImage)
       ..writeByte(4)
       ..write(obj.captainKey);
   }

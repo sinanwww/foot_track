@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:foot_track/utls/app_theam.dart';
+import 'package:foot_track/utls/font_style.dart';
 
-class TypeField extends StatelessWidget {
+class TypeField extends StatefulWidget {
   final String hintText;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
@@ -13,21 +13,34 @@ class TypeField extends StatelessWidget {
   });
 
   @override
+  State<TypeField> createState() => _TypeFieldState();
+}
+
+class _TypeFieldState extends State<TypeField> {
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      validator: validator,
-      controller: controller,
-      decoration: customDecoretion(hintText),
+      style: Fontstyle(color: Theme.of(context).colorScheme.secondary),
+      validator: widget.validator,
+      controller: widget.controller,
+      decoration: customDecoretion(
+        hintText: widget.hintText,
+        fillColor: Theme.of(context).colorScheme.surface,
+      ),
     );
   }
 }
 
-InputDecoration customDecoretion(String hintText) => InputDecoration(
+InputDecoration customDecoretion({
+  required String hintText,
+  required Color fillColor,
+}) => InputDecoration(
   hintText: hintText,
+  hintStyle: Fontstyle(color: Colors.grey[400]),
   border: OutlineInputBorder(
     borderRadius: BorderRadius.circular(16),
     borderSide: BorderSide.none,
   ),
-  fillColor: AppTheam.typeFieldBg,
+  fillColor: fillColor,
   filled: true,
 );

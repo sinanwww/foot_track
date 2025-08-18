@@ -4,20 +4,27 @@ import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/resp.dart';
 import 'package:foot_track/utls/widgets/arrow_button.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
-import 'package:foot_track/view/match/create_match.dart';
 import 'package:foot_track/view/match/date_bottem.dart';
 import 'package:foot_track/view/match/time_bottem.dart';
+import 'package:foot_track/view/tournament/create%20tournament/tour_match/tour_add_match.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class SelectPage extends StatefulWidget {
-  const SelectPage({super.key});
+class SelectMatchConfigPage extends StatefulWidget {
+  final String tournamentKey;
+  final int roundIndex;
+
+  const SelectMatchConfigPage({
+    super.key,
+    required this.tournamentKey,
+    required this.roundIndex,
+  });
 
   @override
-  State<SelectPage> createState() => _SelectPageState();
+  State<SelectMatchConfigPage> createState() => _SelectMatchConfigPageState();
 }
 
-class _SelectPageState extends State<SelectPage> {
+class _SelectMatchConfigPageState extends State<SelectMatchConfigPage> {
   int? selectedLineup;
   DateTime? date = DateTime.now();
   DateTime? startTime;
@@ -26,9 +33,16 @@ class _SelectPageState extends State<SelectPage> {
   final TextEditingController timeCt = TextEditingController();
 
   @override
+  void dispose() {
+    dateCt.dispose();
+    timeCt.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppbar(title: "Select"),
+      appBar: const CustomAppbar(title: "Configure Match"),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -43,7 +57,7 @@ class _SelectPageState extends State<SelectPage> {
                     labelTxt("Select Max Lineup"),
                     Row(
                       children:
-                          maxLinup.entries.map((entry) {
+                          maxLineup.entries.map((entry) {
                             final bool isSelected =
                                 entry.value == selectedLineup;
                             return InkWell(
@@ -54,8 +68,8 @@ class _SelectPageState extends State<SelectPage> {
                               },
                               child: Container(
                                 width: 70,
-                                margin: EdgeInsets.only(right: 10),
-                                padding: EdgeInsets.all(5),
+                                margin: const EdgeInsets.only(right: 10),
+                                padding: const EdgeInsets.all(5),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(50),
                                   color:
@@ -103,7 +117,6 @@ class _SelectPageState extends State<SelectPage> {
                     TimePickerBottom(
                       controller: timeCt,
                       onSubmit: (selectedTime) {
-                        // Convert TimeOfDay to DateTime
                         final now = DateTime.now();
                         startTime = DateTime(
                           now.year,
@@ -116,7 +129,7 @@ class _SelectPageState extends State<SelectPage> {
                         timeCt.text = formattedTime;
                       },
                     ),
-                    SizedBox(height: 50),
+                    const SizedBox(height: 50),
                     ArrowButton(
                       label: "Next",
                       onClick: () {
@@ -136,8 +149,10 @@ class _SelectPageState extends State<SelectPage> {
                             );
                           } else {
                             Get.to(
-                              () => CreateMatchPage(
-                                maxLinup: selectedLineup!,
+                              () => AddTournamentMatchPage(
+                                tournamentKey: widget.tournamentKey,
+                                roundIndex: widget.roundIndex,
+                                maxLineup: selectedLineup!,
                                 date: date,
                                 startTime: startTime,
                               ),
@@ -156,7 +171,7 @@ class _SelectPageState extends State<SelectPage> {
     );
   }
 
-  Map<String, int> maxLinup = {"11s": 11, "9s": 9, "7s": 7, "5s": 5};
+  Map<String, int> maxLineup = {"11s": 11, "9s": 9, "7s": 7, "5s": 5};
 
   Widget labelTxt(String label) => Padding(
     padding: const EdgeInsets.only(top: 30, bottom: 10),

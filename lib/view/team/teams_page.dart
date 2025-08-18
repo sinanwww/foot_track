@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/team/team_model.dart';
-import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
+import 'package:foot_track/utls/resp.dart';
 import 'package:foot_track/utls/widgets/search_field.dart';
 import 'package:foot_track/view%20model/team_service.dart';
 import 'package:foot_track/view/team/team_detail_page.dart';
@@ -66,20 +66,8 @@ class _TeamsPageState extends State<TeamsPage> {
                     builder: (context, cst) {
                       int count = 1;
                       double ratio = 4 / 1;
-                      if (cst.maxWidth > 300) {
-                        ratio = 3 / 0.8;
-                      }
-                      if (cst.maxWidth > 700) {
-                        count = 2;
-                      }
-                      if (cst.maxWidth > 1200) {
-                        count = 3;
-                        ratio = 5 / 1.2;
-                      }
-                      if (cst.maxWidth > 2400) {
-                        count = 3;
-                        ratio = 6 / 1;
-                      }
+                     ratio = getRatio(cst.maxWidth);
+                    count = getCount(cst.maxWidth);
                       return ValueListenableBuilder<List<TeamModel>>(
                         valueListenable: _searchHandler!.filteredItemsNotifier,
                         builder: (context, teams, _) {
@@ -91,6 +79,7 @@ class _TeamsPageState extends State<TeamsPage> {
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                   childAspectRatio: ratio,
                                   crossAxisCount: count,
+                                  crossAxisSpacing: 5,
                                 ),
                             itemCount: teams.length,
                             padding: const EdgeInsets.all(10),
@@ -107,37 +96,40 @@ class _TeamsPageState extends State<TeamsPage> {
                                   margin: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
-                                    color: AppTheam.primarywhite,
+                                    color: Theme.of(context).primaryColor,
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.grey[300]!,
-                                        spreadRadius: 4,
-                                        blurRadius: 4,
+                                        spreadRadius: .4,
+                                        blurRadius: .4,
                                         offset: const Offset(0, 0),
                                       ),
                                     ],
                                   ),
                                   child: Row(
                                     children: [
-                                      showdata.logoimagePath != null
-                                          ? Image.file(
-                                            File(showdata.logoimagePath!),
-                                            scale: 4,
-                                            height: 40,
-                                          )
-                                          : Image.asset(
-                                            "assets/icon/logo.png",
-                                            color: Colors.grey,
-                                            scale: 4,
-                                            height: 40,
-                                          ),
+                                   showdata.logoImage != null
+                                              ? Image.memory(
+                                                showdata.logoImage!
+                                                ,scale: 4,
+                                                height: 40,
+                                              )
+                                              : Image.asset(
+                                                "assets/icon/logo.png",
+                                                color: Colors.grey,
+                                                scale: 4,
+                                                height: 40,
+                                              ),
                                       const SizedBox(width: 15),
                                       Text(
                                         showdata.name ?? "",
                                         style: Fontstyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w500,
-                                          color: AppTheam.primaryBlack,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.secondary,
                                         ),
                                       ),
                                       const Spacer(),
