@@ -20,7 +20,6 @@ class AddNewButton extends StatelessWidget {
     return InkWell(
       onTap: onClick,
       child: Container(
-      
         // padding: EdgeInsets.all(10),
         // width: 360,
         // height: 140,
@@ -42,7 +41,7 @@ class AddNewButton extends StatelessWidget {
                     label,
                     style: Fontstyle(
                       color: Colors.white,
-                      fontSize: ScreenWidth < 1200 ? 12.sp : 10.sp,
+                      fontSize: ScreenWidth < 1200 ? 18.sp : 10.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -50,7 +49,7 @@ class AddNewButton extends StatelessWidget {
                   Icon(
                     Icons.arrow_forward_rounded,
                     color: Colors.white,
-                    size: ScreenWidth < 1200 ? 12.w : 10.w,
+                    size: ScreenWidth < 1200 ? 18.w : 10.w,
                   ),
                 ],
               ),

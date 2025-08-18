@@ -4,6 +4,7 @@ import 'package:foot_track/view/navbar/add_page.dart';
 import 'package:foot_track/view/navbar/home_page.dart';
 import 'package:foot_track/view/navbar/match_tour_page.dart';
 import 'package:foot_track/view/navbar/settings_page.dart';
+import 'package:foot_track/view/settings/help_page.dart';
 import 'package:foot_track/view/navbar/teams_players.dart';
 
 class NavController extends StatefulWidget {

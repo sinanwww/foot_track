@@ -22,7 +22,7 @@ class AddPage extends StatelessWidget {
                 padding: EdgeInsets.all(30),
                 mainAxisSpacing: 16.0,
                 crossAxisSpacing: 16.0,
-                childAspectRatio: 1.7,
+                childAspectRatio: 2,
                 children: [
                   AddNewButton(
                     image: "assets/image/player.png",

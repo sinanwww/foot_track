@@ -47,21 +47,23 @@ class _AddLogoState extends State<AddLogo> {
           Container(
             height: 150,
             width: 150,
-            child: _imageData == null
-                ? Image.asset(
-                    "assets/icon/logo.png",
-                    color: Colors.grey,
-                    fit: BoxFit.cover,
-                  )
-                : Image.memory(
-                    _imageData!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Image.asset(
+            child:
+                _imageData == null
+                    ? Image.asset(
                       "assets/icon/logo.png",
                       color: Colors.grey,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
+                    )
+                    : Image.memory(
+                      _imageData!,
+                      fit: BoxFit.contain,
+                      errorBuilder:
+                          (context, error, stackTrace) => Image.asset(
+                            "assets/icon/logo.png",
+                            color: Colors.grey,
+                            fit: BoxFit.contain,
+                          ),
                     ),
-                  ),
           ),
           Positioned(
             bottom: 10,

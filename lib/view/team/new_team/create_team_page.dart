@@ -22,6 +22,7 @@ class CreateTeam extends StatefulWidget {
 class _CreateTeamState extends State<CreateTeam> {
   TeamModel? team;
   bool isLoading = true;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -30,22 +31,33 @@ class _CreateTeamState extends State<CreateTeam> {
   }
 
   Future<void> _loadTeam() async {
-    final loadedTeam = await TeamRepo().getTeam(widget.teamKey);
-    if (mounted) {
-      setState(() {
-        team = loadedTeam;
-        isLoading = false;
-      });
+    try {
+      final loadedTeam = await TeamRepo().getTeam(widget.teamKey);
+      if (mounted) {
+        setState(() {
+          team = loadedTeam;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          errorMessage = 'Failed to load team: $e';
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(team?.name ?? 'Loading...')),
+      appBar: AppBar(title: Text(team?.name ?? 'Team Details')),
       body:
           isLoading
               ? const Center(child: CircularProgressIndicator())
+              : errorMessage != null
+              ? Center(child: Text(errorMessage!))
               : Padding(
                 padding: const EdgeInsets.all(30),
                 child: Column(
@@ -64,16 +76,15 @@ class _CreateTeamState extends State<CreateTeam> {
                         : Expanded(
                           child: LayoutBuilder(
                             builder: (context, cst) {
-                              int count = 1;
-                              double ratio = 4 / 1;
-                              ratio = getRatio(cst.maxWidth);
-                              count = getCount(cst.maxWidth);
+                              int count = getCount(cst.maxWidth);
+                              double ratio = getRatio(cst.maxWidth);
                               return GridView.builder(
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
                                       childAspectRatio: ratio,
                                       crossAxisCount: count,
                                       crossAxisSpacing: 5,
+                                      mainAxisSpacing: 5,
                                     ),
                                 itemCount: team!.teamPlayer!.length,
                                 itemBuilder: (context, index) {
@@ -87,19 +98,42 @@ class _CreateTeamState extends State<CreateTeam> {
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
-                                        return const ListTile(
-                                          leading: CircularProgressIndicator(),
-                                          title: Text('Loading player...'),
+                                        return const Card(
+                                          child: Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
                                         );
                                       }
 
-                                      if (snapshot.hasError ||
-                                          !snapshot.hasData) {
-                                        return ListTile(
-                                          leading: const Icon(Icons.error),
-                                          title: Text('Jersey: $jerseyNumber'),
-                                          subtitle: const Text(
-                                            'Player not found',
+                                      if (snapshot.hasError) {
+                                        return Card(
+                                          child: Center(
+                                            child: ListTile(
+                                              leading: const Icon(Icons.error),
+                                              title: Text(
+                                                'Jersey: $jerseyNumber',
+                                              ),
+                                              subtitle: const Text(
+                                                'Error loading player',
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }
+
+                                      if (!snapshot.hasData ||
+                                          snapshot.data == null) {
+                                        return Card(
+                                          child: Center(
+                                            child: ListTile(
+                                              leading: const Icon(Icons.error),
+                                              title: Text(
+                                                'Jersey: $jerseyNumber',
+                                              ),
+                                              subtitle: const Text(
+                                                'Player not found',
+                                              ),
+                                            ),
                                           ),
                                         );
                                       }
@@ -112,7 +146,7 @@ class _CreateTeamState extends State<CreateTeam> {
                                               backgroundColor: Colors.orange,
                                               child: Text(
                                                 jerseyNumber.toString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   color: Colors.white,
                                                 ),
                                               ),
@@ -132,11 +166,17 @@ class _CreateTeamState extends State<CreateTeam> {
                                                 color: AppColors.secondary,
                                               ),
                                             ),
-                                            trailing: CircleAvatar(
-                                              backgroundImage: MemoryImage(
-                                                player.imageData!,
-                                              ),
-                                            ),
+                                            trailing:
+                                                player.imageData != null
+                                                    ? CircleAvatar(
+                                                      backgroundImage:
+                                                          MemoryImage(
+                                                            player.imageData!,
+                                                          ),
+                                                    )
+                                                    : const CircleAvatar(
+                                                      child: Icon(Icons.person),
+                                                    ),
                                           ),
                                         ),
                                       );
@@ -152,7 +192,7 @@ class _CreateTeamState extends State<CreateTeam> {
               ),
       bottomNavigationBar: Container(
         color: Theme.of(context).primaryColor,
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         child: AuthButton(
           onClick: () {
             Get.to(() => NavController(index: 3, teamPlayerTabIndex: 0));
