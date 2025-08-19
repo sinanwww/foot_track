@@ -115,6 +115,7 @@ class _MatchStatPageState extends State<MatchStatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         title: Text(
           formatedDate ?? '',
@@ -180,20 +181,15 @@ class _MatchStatPageState extends State<MatchStatPage> {
                   ),
                   const Divider(color: AppColors.grey),
                   Text(
-                    match!.description == ""
+                    match!.description == "" || match!.description == null
                         ? 'No Description'
                         : match!.description ?? "",
                   ),
                   const Divider(color: AppColors.grey),
                   const SizedBox(height: 20),
-                  // Goal Scorers
-                  const Text(
-                    "Goal Scorers",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
 
-                  const SizedBox(height: 20),
+                  // Goal Scorers
+                  const SizedBox(height: 10),
                   // Home Lineup
                   const Text(
                     "Home Lineup",

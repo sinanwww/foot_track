@@ -168,6 +168,7 @@ class _MatchDetailsPageState extends State<MatchDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         elevation: 2,
         actions: [
