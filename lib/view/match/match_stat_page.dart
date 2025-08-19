@@ -192,7 +192,7 @@ class _MatchStatPageState extends State<MatchStatPage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
-                  _buildGoalScorersList(match!.goalScorers ?? []),
+
                   const SizedBox(height: 20),
                   // Home Lineup
                   const Text(
@@ -259,10 +259,24 @@ class _MatchStatPageState extends State<MatchStatPage> {
                 final player = snapshot.data!;
                 final jerseyNumber =
                     team?.teamPlayer?[playerKey]?.toString() ?? 'N/A';
+
+                final goals =
+                    (match!.goalScorers ?? [])
+                        .where((g) => g['playerKey'] == playerKey)
+                        .length;
+                final yellows =
+                    (match!.yellowCards ?? [])
+                        .where((g) => g['playerKey'] == playerKey)
+                        .length;
+                final reds =
+                    (match!.redCards ?? [])
+                        .where((g) => g['playerKey'] == playerKey)
+                        .length;
+                final isSentOff = reds > 0 || yellows >= 2;
                 return Column(
                   children: [
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         CircleAvatar(
                           backgroundColor: Colors.blue,
@@ -293,6 +307,18 @@ class _MatchStatPageState extends State<MatchStatPage> {
                             ),
                           ],
                         ),
+                        Spacer(),
+                        if (goals > 0)
+                          playerStat(
+                            isGoal: true,
+                            count: goals,
+                            iconColor: Colors.green,
+                          ),
+                        if (yellows > 0)
+                          playerStat(count: yellows, iconColor: Colors.yellow),
+                        if (reds > 0)
+                          playerStat(count: reds, iconColor: Colors.red),
+                        SizedBox(width: 10),
                       ],
                     ),
                     const Divider(color: AppColors.secondary),
@@ -304,125 +330,22 @@ class _MatchStatPageState extends State<MatchStatPage> {
         );
   }
 
-  Widget _buildGoalScorersList(List<Map<String, dynamic>> goalScorers) {
-    if (goalScorers.isEmpty) {
-      return const Text("No goals scored");
-    }
-
-    // Group goal scorers by team
-    final homeGoals =
-        goalScorers
-            .where(
-              (goal) =>
-                  (match!.homeLineup ?? []).contains(goal['playerKey']) ||
-                  (match!.substitutions ?? []).any(
-                    (sub) =>
-                        sub['outPlayerKey'] == goal['playerKey'] &&
-                        sub['isHome'],
-                  ),
-            )
-            .toList();
-    final awayGoals =
-        goalScorers
-            .where(
-              (goal) =>
-                  (match!.awayLineup ?? []).contains(goal['playerKey']) ||
-                  (match!.substitutions ?? []).any(
-                    (sub) =>
-                        sub['outPlayerKey'] == goal['playerKey'] &&
-                        !sub['isHome'],
-                  ),
-            )
-            .toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Home Team Goals
-        if (homeGoals.isNotEmpty) ...[
-          Text(
-            "${homeTeam?.name ?? 'Home'} Goals",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 5),
-          ...homeGoals
-              .map((goal) => _buildGoalScorerItem(goal, homeTeam))
-              .toList(),
-          const SizedBox(height: 10),
-        ],
-        // Away Team Goals
-        if (awayGoals.isNotEmpty) ...[
-          Text(
-            "${awayTeam?.name ?? 'Away'} Goals",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 5),
-          ...awayGoals
-              .map((goal) => _buildGoalScorerItem(goal, awayTeam))
-              .toList(),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildGoalScorerItem(Map<String, dynamic> goal, TeamModel? team) {
-    final playerKey = goal['playerKey'] as String;
-    final time = goal['time'] as DateTime?;
-    return FutureBuilder<PlayerModel?>(
-      future: _playerRepo.getPlayer(playerKey),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const ListTile(title: CircularProgressIndicator());
-        }
-        if (snapshot.hasError || !snapshot.hasData) {
-          return const ListTile(title: Text('Player not found'));
-        }
-        final player = snapshot.data!;
-        final jerseyNumber = team?.teamPlayer?[playerKey]?.toString() ?? 'N/A';
-        final timeString =
-            time != null ? DateFormat('mm:ss').format(time) : 'N/A';
-        return Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.green,
-                  child: Text(
-                    jerseyNumber,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      player.name,
-                      style: Fontstyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Text(
-                      'Goal at $timeString',
-                      style: Fontstyle(
-                        color: AppColors.secondary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const Divider(color: AppColors.secondary),
-          ],
-        );
-      },
-    );
-  }
+  Widget playerStat({
+    required int count,
+    bool isGoal = false,
+    required Color iconColor,
+  }) => Row(
+    children: [
+      Transform.rotate(
+        angle: 300,
+        child: Icon(
+          isGoal == true ? Icons.sports_soccer : Icons.rectangle,
+          color: iconColor,
+        ),
+      ),
+      Text(count.toString()),
+    ],
+  );
 
   Widget _buildSubstitutionsList(List<Map<String, dynamic>> substitutions) {
     if (substitutions.isEmpty) {

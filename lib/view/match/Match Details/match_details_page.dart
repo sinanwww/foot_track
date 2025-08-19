@@ -107,7 +107,7 @@ class _MatchDetailsPageState extends State<MatchDetailsPage> {
               ),
             ),
             // ignore: deprecated_member_use
-            dialogBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            dialogBackgroundColor: Theme.of(context).colorScheme.surface,
           ),
           child: child!,
         );

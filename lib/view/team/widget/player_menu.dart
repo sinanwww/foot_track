@@ -217,15 +217,31 @@ class _JerseyNumberDialogState extends State<_JerseyNumberDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit Jersey Number'),
+      title: Text(
+        'Edit Jersey Number',
+        style: Fontstyle(color: Theme.of(context).colorScheme.secondary),
+      ),
       content: Form(
         key: _formKey,
         child: TextFormField(
           controller: _jerseyNumberController,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
+          style: Fontstyle(color: Theme.of(context).colorScheme.secondary),
+          decoration: InputDecoration(
+            hintStyle: Fontstyle(
+              color: Theme.of(context).colorScheme.secondary,
+            ),
             hintText: 'Enter new jersey number',
-            border: OutlineInputBorder(),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+            ),
           ),
           validator: (value) {
             if (value == null || value.trim().isEmpty) {

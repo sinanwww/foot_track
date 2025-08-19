@@ -94,9 +94,7 @@ class _MatchesListState extends State<MatchesList> {
                   );
                 }
                 final matches = snapshot.data ?? [];
-                print(
-                  'All Matches: ${matches.map((m) => m.date?.toString()).toList()}',
-                );
+               
 
                 if (matches.isEmpty) {
                   return Center(
@@ -122,9 +120,7 @@ class _MatchesListState extends State<MatchesList> {
                         match.date!.month,
                         match.date!.day,
                       );
-                      print(
-                        'Match Date: ${match.date}, Today: $today, Is After: ${matchDate.isAfter(today)}',
-                      );
+                     
                       if (isTodayNotifier.value) {
                         return matchDate.isAtSameMomentAs(today);
                       } else {
@@ -132,9 +128,7 @@ class _MatchesListState extends State<MatchesList> {
                       }
                     }).toList();
 
-                print(
-                  'Filtered Matches (${isTodayNotifier.value ? "Today" : "Upcoming"}): ${filteredMatches.length}',
-                );
+               
 
                 if (filteredMatches.isEmpty) {
                   return Center(

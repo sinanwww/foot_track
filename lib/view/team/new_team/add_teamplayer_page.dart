@@ -25,29 +25,99 @@ class _AddTeamPlayerPageState extends State<AddTeamPlayerPage> {
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   SearchHandler<PlayerModel>? _searchHandler;
+  String? _selectedPosition;
+  List<PlayerModel> _availablePlayers = [];
+  Future<void>? _loadFuture; // Cache the Future
+  String? _errorMessage;
+
+  // List of possible positions, including "All" for no position filter
+  final List<String> _positions = [
+    'All',
+    'GK', // Goalkeeper
+    'DEF', // Defender
+    'MID', // Midfielder
+    'FWD', // Forward
+  ];
+
+  // Map dropdown abbreviations to PlayerModel position values
+  final Map<String, String> _positionMap = {
+    'GK': 'Goalkeeper',
+    'DEF': 'Defender',
+    'MID': 'Midfielder',
+    'FWD': 'Forward',
+  };
 
   @override
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
+    _selectedPosition = _positions[0]; // Default to "All"
+    _loadFuture = _loadData(); // Initialize Future once
   }
 
   void _onSearchChanged() {
+    print('Search query: ${_searchController.text}');
     _searchHandler?.filter(_searchController.text);
   }
 
   Future<void> _loadData() async {
-    await _playerRepo.init();
-    final allPlayers = await _playerRepo.getAllPlayers();
-    final teamPlayerKeys = await _teamService.getTeamPlayerKeys(widget.teamKey);
-    final availablePlayers =
-        allPlayers
-            .where((player) => !teamPlayerKeys.contains(player.key))
-            .toList();
-    _searchHandler = SearchHandler<PlayerModel>(
-      allItems: availablePlayers,
-      filterProperty: (player) => player.name,
+    try {
+      print('Loading data: Initializing PlayerRepo');
+      await _playerRepo.init();
+      print('Loading data: Fetching all players');
+      final allPlayers = await _playerRepo.getAllPlayers();
+      print(
+        'Loading data: Fetching team player keys for team ${widget.teamKey}',
+      );
+      final teamPlayerKeys = await _teamService.getTeamPlayerKeys(
+        widget.teamKey,
+      );
+      print(
+        'Loaded ${allPlayers.length} players, ${teamPlayerKeys.length} team players',
+      );
+      print('Player positions: ${allPlayers.map((p) => p.position).toSet()}');
+      setState(() {
+        _availablePlayers =
+            allPlayers
+                .where((player) => !teamPlayerKeys.contains(player.key))
+                .toList();
+        _searchHandler = SearchHandler<PlayerModel>(
+          allItems: _availablePlayers,
+          filterProperty: (player) => player.name, // Handle null name
+        );
+        _errorMessage = null;
+      });
+    } catch (e) {
+      print('Error loading data: $e');
+      setState(() {
+        _errorMessage = 'Failed to load players: $e';
+      });
+    }
+  }
+
+  // Filter players by position
+  List<PlayerModel> _filterByPosition(List<PlayerModel> players) {
+    if (_selectedPosition == 'All' || _selectedPosition == null) {
+      print('Position filter: All, returning ${players.length} players');
+      return players;
+    }
+    final mappedPosition = _positionMap[_selectedPosition];
+    if (mappedPosition == null) {
+      print(
+        'Position filter: Invalid position $_selectedPosition, returning 0 players',
+      );
+      return [];
+    }
+    final filtered =
+        players.where((player) {
+          final matchesPosition =
+              player.position.toLowerCase() == mappedPosition.toLowerCase();
+          return matchesPosition;
+        }).toList();
+    print(
+      'Position filter: $_selectedPosition ($mappedPosition), returning ${filtered.length} players',
     );
+    return filtered;
   }
 
   @override
@@ -56,20 +126,80 @@ class _AddTeamPlayerPageState extends State<AddTeamPlayerPage> {
       appBar: const CustomAppbar(title: "Add Player"),
       body: SafeArea(
         child: FutureBuilder<void>(
-          future: _loadData(),
+          future: _loadFuture, // Use cached Future
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+            if (_errorMessage != null) {
+              return Center(child: Text(_errorMessage!));
+            }
+            if (_availablePlayers.isEmpty && _searchHandler != null) {
+              return const Center(child: Text('No players available to add'));
             }
             return Column(
               children: [
-                SearchWidget(
-                  controller: _searchController,
-                  onChanged: (query) => _searchHandler?.filter(query),
-                  hintText: 'Search players to add...',
+                Row(
+                  children: [
+                    // Search Field
+                    Expanded(
+                      child: SearchWidget(
+                        controller: _searchController,
+                        onChanged: (query) => _searchHandler?.filter(query),
+                        hintText: 'Search players to add...',
+                      ),
+                    ),
+                    // Position Filter Dropdown
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * .25,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedPosition,
+                          decoration: InputDecoration(
+                            labelText: 'Filter',
+                            labelStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          items:
+                              _positions.map((position) {
+                                return DropdownMenuItem<String>(
+                                  value: position,
+                                  child: Text(
+                                    position,
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.secondary,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                          onChanged: (value) {
+                            print('Selected position: $value');
+                            setState(() {
+                              _selectedPosition = value;
+                              _searchHandler?.filter(_searchController.text);
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: LayoutBuilder(
@@ -81,22 +211,30 @@ class _AddTeamPlayerPageState extends State<AddTeamPlayerPage> {
                       return ValueListenableBuilder<List<PlayerModel>>(
                         valueListenable: _searchHandler!.filteredItemsNotifier,
                         builder: (context, filteredPlayers, _) {
-                          if (filteredPlayers.isEmpty) {
+                          // Apply position filter
+                          final positionFilteredPlayers = _filterByPosition(
+                            filteredPlayers,
+                          );
+                          if (positionFilteredPlayers.isEmpty) {
                             return const Center(
                               child: Text("No available players to add"),
                             );
                           }
+                          print(
+                            'Displaying ${positionFilteredPlayers.length} players after filtering',
+                          );
                           return GridView.builder(
                             padding: const EdgeInsets.all(15),
-                            itemCount: filteredPlayers.length,
+                            itemCount: positionFilteredPlayers.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                   childAspectRatio: ratio,
                                   crossAxisCount: count,
                                   crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5,
                                 ),
                             itemBuilder: (context, index) {
-                              final player = filteredPlayers[index];
+                              final player = positionFilteredPlayers[index];
                               return SelectPlayerCard(
                                 onClick: () {
                                   showModalBottomSheet(
@@ -126,7 +264,6 @@ class _AddTeamPlayerPageState extends State<AddTeamPlayerPage> {
                                                               .colorScheme
                                                               .secondary,
                                                     ),
-
                                                     keyboardType:
                                                         TextInputType.number,
                                                     decoration: InputDecoration(

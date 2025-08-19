@@ -36,7 +36,9 @@ class MatchService {
     final matchKey = uuid.v4();
     final existingMatch = box.get(matchKey);
     if (existingMatch != null) {
-      print('Warning: Match with key $matchKey already exists, generating new key');
+      print(
+        'Warning: Match with key $matchKey already exists, generating new key',
+      );
       return createMatch(
         homeTeamKey: homeTeamKey,
         awayTeamKey: awayTeamKey,
@@ -161,17 +163,28 @@ class MatchService {
     final match = box.get(matchKey);
     if (match != null) {
       // Check if player has a red card or two yellows
-      final redCount = (match.redCards ?? []).where((r) => r['playerKey'] == playerKey).length;
-      final yellowCount = (match.yellowCards ?? []).where((y) => y['playerKey'] == playerKey).length;
+      final redCount =
+          (match.redCards ?? [])
+              .where((r) => r['playerKey'] == playerKey)
+              .length;
+      final yellowCount =
+          (match.yellowCards ?? [])
+              .where((y) => y['playerKey'] == playerKey)
+              .length;
       if (redCount > 0 || yellowCount >= 2) {
         throw Exception('Player has been sent off and cannot score');
       }
       // Verify player is in the correct lineup or was substituted
-      bool isPlayerInTeam = isHome
-          ? (match.homeLineup ?? []).contains(playerKey) ||
-              (match.substitutions ?? []).any((sub) => sub['outPlayerKey'] == playerKey && sub['isHome'])
-          : (match.awayLineup ?? []).contains(playerKey) ||
-              (match.substitutions ?? []).any((sub) => sub['outPlayerKey'] == playerKey && !sub['isHome']);
+      bool isPlayerInTeam =
+          isHome
+              ? (match.homeLineup ?? []).contains(playerKey) ||
+                  (match.substitutions ?? []).any(
+                    (sub) => sub['outPlayerKey'] == playerKey && sub['isHome'],
+                  )
+              : (match.awayLineup ?? []).contains(playerKey) ||
+                  (match.substitutions ?? []).any(
+                    (sub) => sub['outPlayerKey'] == playerKey && !sub['isHome'],
+                  );
       if (!isPlayerInTeam) {
         throw Exception('Player is not in ${isHome ? 'home' : 'away'} team');
       }
@@ -206,24 +219,41 @@ class MatchService {
         throw Exception('Goal count cannot be negative');
       }
       // Verify player is in the correct lineup or was substituted
-      bool isPlayerInTeam = isHome
-          ? (match.homeLineup ?? []).contains(playerKey) ||
-              (match.substitutions ?? []).any((sub) => sub['outPlayerKey'] == playerKey && sub['isHome'])
-          : (match.awayLineup ?? []).contains(playerKey) ||
-              (match.substitutions ?? []).any((sub) => sub['outPlayerKey'] == playerKey && !sub['isHome']);
+      bool isPlayerInTeam =
+          isHome
+              ? (match.homeLineup ?? []).contains(playerKey) ||
+                  (match.substitutions ?? []).any(
+                    (sub) => sub['outPlayerKey'] == playerKey && sub['isHome'],
+                  )
+              : (match.awayLineup ?? []).contains(playerKey) ||
+                  (match.substitutions ?? []).any(
+                    (sub) => sub['outPlayerKey'] == playerKey && !sub['isHome'],
+                  );
       if (!isPlayerInTeam) {
         throw Exception('Player is not in ${isHome ? 'home' : 'away'} team');
       }
       // Check if player has a red card or two yellows
-      final redCount = (match.redCards ?? []).where((r) => r['playerKey'] == playerKey).length;
-      final yellowCount = (match.yellowCards ?? []).where((y) => y['playerKey'] == playerKey).length;
+      final redCount =
+          (match.redCards ?? [])
+              .where((r) => r['playerKey'] == playerKey)
+              .length;
+      final yellowCount =
+          (match.yellowCards ?? [])
+              .where((y) => y['playerKey'] == playerKey)
+              .length;
       if (redCount > 0 || yellowCount >= 2) {
         throw Exception('Player has been sent off and cannot score');
       }
       // Calculate current goals for the player
-      final currentGoals = (match.goalScorers ?? []).where((g) => g['playerKey'] == playerKey).length;
+      final currentGoals =
+          (match.goalScorers ?? [])
+              .where((g) => g['playerKey'] == playerKey)
+              .length;
       // Update goalScorers
-      match.goalScorers = (match.goalScorers ?? []).where((g) => g['playerKey'] != playerKey).toList();
+      match.goalScorers =
+          (match.goalScorers ?? [])
+              .where((g) => g['playerKey'] != playerKey)
+              .toList();
       for (int i = 0; i < goalCount; i++) {
         match.goalScorers!.add({'playerKey': playerKey, 'time': time});
       }
@@ -243,7 +273,9 @@ class MatchService {
         match.awayScore = newAwayScore;
       }
       await match.save();
-      print('Updated goals for match $matchKey, player $playerKey: $goalCount goals, score adjusted by $goalDiff');
+      print(
+        'Updated goals for match $matchKey, player $playerKey: $goalCount goals, score adjusted by $goalDiff',
+      );
     } else {
       print('Error: Match $matchKey not found for goal update');
       throw Exception('Match not found');
@@ -261,10 +293,18 @@ class MatchService {
       match.yellowCards ??= [];
       match.redCards ??= [];
       // Check existing cards
-      final yellowCount = (match.yellowCards ?? []).where((y) => y['playerKey'] == playerKey).length;
-      final redCount = (match.redCards ?? []).where((r) => r['playerKey'] == playerKey).length;
+      final yellowCount =
+          (match.yellowCards ?? [])
+              .where((y) => y['playerKey'] == playerKey)
+              .length;
+      final redCount =
+          (match.redCards ?? [])
+              .where((r) => r['playerKey'] == playerKey)
+              .length;
       if (redCount > 0 || yellowCount >= 2) {
-        throw Exception('Player has been sent off and cannot receive more cards');
+        throw Exception(
+          'Player has been sent off and cannot receive more cards',
+        );
       }
       match.yellowCards!.add({'playerKey': playerKey, 'time': time});
       // If this is the second yellow, add a red card
@@ -290,8 +330,14 @@ class MatchService {
     if (match != null) {
       match.redCards ??= [];
       // Check if player already has a red card or two yellows
-      final redCount = (match.redCards ?? []).where((r) => r['playerKey'] == playerKey).length;
-      final yellowCount = (match.yellowCards ?? []).where((y) => y['playerKey'] == playerKey).length;
+      final redCount =
+          (match.redCards ?? [])
+              .where((r) => r['playerKey'] == playerKey)
+              .length;
+      final yellowCount =
+          (match.yellowCards ?? [])
+              .where((y) => y['playerKey'] == playerKey)
+              .length;
       if (redCount > 0 || yellowCount >= 2) {
         throw Exception('Player has already been sent off');
       }
@@ -328,21 +374,25 @@ class MatchService {
         throw Exception('Cannot have two yellows with a direct red card');
       }
       // Update yellow cards
-      match.yellowCards = (match.yellowCards ?? [])
-          .where((y) => y['playerKey'] != playerKey)
-          .toList();
+      match.yellowCards =
+          (match.yellowCards ?? [])
+              .where((y) => y['playerKey'] != playerKey)
+              .toList();
       for (int i = 0; i < yellowCount; i++) {
         match.yellowCards!.add({'playerKey': playerKey, 'time': time});
       }
       // Update red cards
-      match.redCards = (match.redCards ?? [])
-          .where((r) => r['playerKey'] != playerKey)
-          .toList();
+      match.redCards =
+          (match.redCards ?? [])
+              .where((r) => r['playerKey'] != playerKey)
+              .toList();
       if (redCount == 1) {
         match.redCards!.add({'playerKey': playerKey, 'time': time});
       }
       await match.save();
-      print('Updated cards for match $matchKey, player $playerKey: $yellowCount yellow, $redCount red');
+      print(
+        'Updated cards for match $matchKey, player $playerKey: $yellowCount yellow, $redCount red',
+      );
     } else {
       print('Error: Match $matchKey not found for card update');
       throw Exception('Match not found');
@@ -361,14 +411,24 @@ class MatchService {
     if (match != null) {
       match.substitutions ??= [];
       // Check if outPlayerKey has already been substituted
-      if (match.substitutions!.any((sub) => sub['outPlayerKey'] == outPlayerKey)) {
+      if (match.substitutions!.any(
+        (sub) => sub['outPlayerKey'] == outPlayerKey,
+      )) {
         throw Exception('Player $outPlayerKey has already been substituted');
       }
       // Check if outPlayerKey has a red card or two yellows
-      final redCount = (match.redCards ?? []).where((r) => r['playerKey'] == outPlayerKey).length;
-      final yellowCount = (match.yellowCards ?? []).where((y) => y['playerKey'] == outPlayerKey).length;
+      final redCount =
+          (match.redCards ?? [])
+              .where((r) => r['playerKey'] == outPlayerKey)
+              .length;
+      final yellowCount =
+          (match.yellowCards ?? [])
+              .where((y) => y['playerKey'] == outPlayerKey)
+              .length;
       if (redCount > 0 || yellowCount >= 2) {
-        throw Exception('Player $outPlayerKey has been sent off and cannot be substituted');
+        throw Exception(
+          'Player $outPlayerKey has been sent off and cannot be substituted',
+        );
       }
       // Check if inPlayerKey is in the appropriate bench
       final validBench = isHome ? match.homeBench : match.awayBench;
@@ -382,24 +442,26 @@ class MatchService {
         'isHome': isHome,
       });
       if (isHome) {
-        match.homeLineup = (match.homeLineup ?? [])
-            .where((key) => key != outPlayerKey)
-            .toList()
-          ..add(inPlayerKey);
-        match.homeBench = (match.homeBench ?? [])
-            .where((key) => key != inPlayerKey)
-            .toList();
+        match.homeLineup =
+            (match.homeLineup ?? [])
+                .where((key) => key != outPlayerKey)
+                .toList()
+              ..add(inPlayerKey);
+        match.homeBench =
+            (match.homeBench ?? []).where((key) => key != inPlayerKey).toList();
       } else {
-        match.awayLineup = (match.awayLineup ?? [])
-            .where((key) => key != outPlayerKey)
-            .toList()
-          ..add(inPlayerKey);
-        match.awayBench = (match.awayBench ?? [])
-            .where((key) => key != inPlayerKey)
-            .toList();
+        match.awayLineup =
+            (match.awayLineup ?? [])
+                .where((key) => key != outPlayerKey)
+                .toList()
+              ..add(inPlayerKey);
+        match.awayBench =
+            (match.awayBench ?? []).where((key) => key != inPlayerKey).toList();
       }
       await match.save();
-      print('Added substitution for match $matchKey: $outPlayerKey -> $inPlayerKey');
+      print(
+        'Added substitution for match $matchKey: $outPlayerKey -> $inPlayerKey',
+      );
     } else {
       print('Error: Match $matchKey not found for substitution');
       throw Exception('Match not found');
@@ -426,7 +488,9 @@ class MatchService {
     final timeFormat = DateFormat('HH:mm');
 
     for (var match in box.values) {
-      if (match.key == null || match.homeTeamKey == null || match.awayTeamKey == null) {
+      if (match.key == null ||
+          match.homeTeamKey == null ||
+          match.awayTeamKey == null) {
         if (match.key != null) {
           invalidKeys.add(match.key!);
         }
