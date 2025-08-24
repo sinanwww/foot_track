@@ -5,6 +5,7 @@ import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
 import 'package:foot_track/utls/widgets/arrow_button.dart';
+import 'package:foot_track/utls/widgets/player_select_card.dart';
 import 'package:foot_track/view%20model/match_service.dart';
 import 'package:foot_track/view%20model/player.dart';
 import 'package:foot_track/view/match/Match%20Details/match_details_page.dart';
@@ -54,9 +55,14 @@ class _SelectAwayBenchPageState extends State<SelectAwayBenchPage> {
         const SizedBox(height: 10),
         FutureBuilder<List<PlayerModel>>(
           future: Future.wait(
-            (team.teamPlayer?.keys ?? []).map(
-              (playerKey) => _playerRepo.getPlayer(playerKey),
-            ),
+            (team.teamPlayer?.keys ?? [])
+                .where(
+                  (playerKey) =>
+                      !currentLineup.contains(playerKey) &&
+                      !otherLineup.contains(playerKey) &&
+                      !otherBench.contains(playerKey),
+                )
+                .map((playerKey) => _playerRepo.getPlayer(playerKey)),
           ).then((players) => players.whereType<PlayerModel>().toList()),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -79,51 +85,28 @@ class _SelectAwayBenchPageState extends State<SelectAwayBenchPage> {
                       children:
                           players.map((player) {
                             final isSelected = awayBench.contains(player.key);
-                            final isInLineup = currentLineup.contains(
-                              player.key,
-                            );
-                            final isInOtherLineup = otherLineup.contains(
-                              player.key,
-                            );
-                            final isInOtherBench = otherBench.contains(
-                              player.key,
-                            );
-                            return ChoiceChip(
-                              selectedColor: AppColors.primary,
-                              label: Text(
-                                player.name,
+                            return PlayerSelectCard(
+                              name: player.name,
+                              isSelected: isSelected,
+                              enabled: true, // All players are available
+                              subTitele: Text(
+                                player.position,
                                 style: Fontstyle(
-                                  color:
-                                      isSelected
-                                          ? Colors.white
-                                          : Theme.of(
-                                            context,
-                                          ).colorScheme.secondary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.black,
                                 ),
                               ),
-                              selected: isSelected,
-                              disabledColor:
-                                  (isInLineup ||
-                                          isInOtherLineup ||
-                                          isInOtherBench)
-                                      ? Colors.grey
-                                      : null,
-                              onSelected:
-                                  (isInLineup ||
-                                          isInOtherLineup ||
-                                          isInOtherBench)
-                                      ? null
-                                      : (selected) {
-                                        final newBench = List<String>.from(
-                                          awayBench,
-                                        );
-                                        if (selected) {
-                                          newBench.add(player.key!);
-                                        } else {
-                                          newBench.remove(player.key!);
-                                        }
-                                        awayBenchNotifier.value = newBench;
-                                      },
+                              imageData: player.imageData,
+                              onChanged: (value) {
+                                final newBench = List<String>.from(awayBench);
+                                if (value == true) {
+                                  newBench.add(player.key!);
+                                } else {
+                                  newBench.remove(player.key);
+                                }
+                                awayBenchNotifier.value = newBench;
+                              },
                             );
                           }).toList(),
                     ),

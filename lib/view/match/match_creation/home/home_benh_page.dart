@@ -5,6 +5,7 @@ import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
 import 'package:foot_track/utls/widgets/arrow_button.dart';
+import 'package:foot_track/utls/widgets/player_select_card.dart';
 import 'package:foot_track/view%20model/player.dart';
 import 'package:foot_track/view/match/match_creation/away/select_away_page.dart';
 import 'package:foot_track/view/match/match_creation/match_creation_data.dart';
@@ -14,7 +15,11 @@ class SelectHomeBenchPage extends StatefulWidget {
   final MatchCreationData data;
   final int maxLinup;
 
-  const SelectHomeBenchPage({super.key, required this.data,required this.maxLinup});
+  const SelectHomeBenchPage({
+    super.key,
+    required this.data,
+    required this.maxLinup,
+  });
 
   @override
   State<SelectHomeBenchPage> createState() => _SelectHomeBenchPageState();
@@ -22,7 +27,8 @@ class SelectHomeBenchPage extends StatefulWidget {
 
 class _SelectHomeBenchPageState extends State<SelectHomeBenchPage> {
   final PlayerRepo _playerRepo = PlayerRepo();
-  final ValueNotifier<List<String>> homeBenchNotifier = ValueNotifier<List<String>>([]);
+  final ValueNotifier<List<String>> homeBenchNotifier =
+      ValueNotifier<List<String>>([]);
 
   @override
   void initState() {
@@ -50,15 +56,17 @@ class _SelectHomeBenchPageState extends State<SelectHomeBenchPage> {
         const SizedBox(height: 10),
         FutureBuilder<List<PlayerModel>>(
           future: Future.wait(
-            (team.teamPlayer?.keys ?? []).map(
-              (playerKey) => _playerRepo.getPlayer(playerKey),
-            ),
+            (team.teamPlayer?.keys ?? [])
+                .where((playerKey) => !currentLineup.contains(playerKey))
+                .map((playerKey) => _playerRepo.getPlayer(playerKey)),
           ).then((players) => players.whereType<PlayerModel>().toList()),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
             }
-            if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+            if (snapshot.hasError ||
+                !snapshot.hasData ||
+                snapshot.data!.isEmpty) {
               return const Text('No players available for bench');
             }
             final players = snapshot.data!;
@@ -70,34 +78,34 @@ class _SelectHomeBenchPageState extends State<SelectHomeBenchPage> {
                   children: [
                     Wrap(
                       spacing: 8,
-                      children: players.map((player) {
-                        final isSelected = homeBench.contains(player.key);
-                        final isInLineup = currentLineup.contains(player.key);
-                        return ChoiceChip(
-                          selectedColor: AppColors.primary,
-                          label: Text(
-                            player.name,
-                            style: Fontstyle(
-                              color: isSelected
-                                  ? Colors.white
-                                  : Theme.of(context).colorScheme.secondary,
-                            ),
-                          ),
-                          selected: isSelected,
-                          disabledColor: isInLineup ? Colors.grey : null,
-                          onSelected: isInLineup
-                              ? null
-                              : (selected) {
-                                  final newBench = List<String>.from(homeBench);
-                                  if (selected) {
-                                    newBench.add(player.key!);
-                                  } else {
-                                    newBench.remove(player.key!);
-                                  }
-                                  homeBenchNotifier.value = newBench;
-                                },
-                        );
-                      }).toList(),
+                      children:
+                          players.map((player) {
+                            final isSelected = homeBench.contains(player.key);
+                            return PlayerSelectCard(
+                              name: player.name,
+                              isSelected: isSelected,
+                              enabled:
+                                  true, // All players are available (not in lineup)
+                              subTitele: Text(
+                                player.position,
+                                style: Fontstyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.black,
+                                ),
+                              ),
+                              imageData: player.imageData,
+                              onChanged: (value) {
+                                final newBench = List<String>.from(homeBench);
+                                if (value == true) {
+                                  newBench.add(player.key!);
+                                } else {
+                                  newBench.remove(player.key);
+                                }
+                                homeBenchNotifier.value = newBench;
+                              },
+                            );
+                          }).toList(),
                     ),
                     Text("Bench Selected: ${homeBench.length}"),
                   ],
@@ -123,7 +131,10 @@ class _SelectHomeBenchPageState extends State<SelectHomeBenchPage> {
             children: [
               Text(
                 "Select Bench for ${team.name ?? 'Team'}",
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
               const SizedBox(height: 20),
               _buildBenchSelector(team),
@@ -131,10 +142,13 @@ class _SelectHomeBenchPageState extends State<SelectHomeBenchPage> {
               ArrowButton(
                 label: "Next",
                 onClick: () {
-                  Get.to(() => SelectAwayTeamPage(
-                    // maxLinup: widget.maxLinup,
-                        data: widget.data.copyWith(homeBench: homeBenchNotifier.value),
-                      ));
+                  Get.to(
+                    () => SelectAwayTeamPage(
+                      data: widget.data.copyWith(
+                        homeBench: homeBenchNotifier.value,
+                      ),
+                    ),
+                  );
                 },
               ),
             ],

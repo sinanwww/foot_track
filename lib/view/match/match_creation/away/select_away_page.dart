@@ -5,6 +5,7 @@ import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
 import 'package:foot_track/utls/widgets/arrow_button.dart';
+import 'package:foot_track/utls/widgets/player_select_card.dart';
 import 'package:foot_track/view%20model/team_service.dart';
 import 'package:foot_track/view%20model/player.dart';
 import 'package:foot_track/view/match/match_creation/away/away_bench_page.dart';
@@ -83,6 +84,7 @@ class _SelectAwayTeamPageState extends State<SelectAwayTeamPage> {
 
   Widget _buildLineupSelector(TeamModel team) {
     final otherLineup = widget.data.homeLineup;
+    final otherBench = widget.data.homeBench;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -110,6 +112,7 @@ class _SelectAwayTeamPageState extends State<SelectAwayTeamPage> {
             return ValueListenableBuilder<List<String>>(
               valueListenable: awayLineupNotifier,
               builder: (context, awayLineup, _) {
+                final isMaxReached = awayLineup.length >= widget.data.maxLinup;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -118,38 +121,55 @@ class _SelectAwayTeamPageState extends State<SelectAwayTeamPage> {
                       children:
                           players.map((player) {
                             final isSelected = awayLineup.contains(player.key);
-                            final isInOtherLineup = otherLineup.contains(
-                              player.key,
-                            );
-                            return ChoiceChip(
-                              selectedColor: AppColors.primary,
-                              label: Text(
-                                player.name,
-                                style: Fontstyle(
-                                  color:
-                                      isSelected
-                                          ? Colors.white
-                                          : Theme.of(
-                                            context,
-                                          ).colorScheme.secondary,
-                                ),
-                              ),
-                              selected: isSelected,
-                              disabledColor:
-                                  isInOtherLineup ? Colors.grey : null,
-                              onSelected:
-                                  isInOtherLineup
+                            final isInHomeTeam =
+                                otherLineup.contains(player.key) ||
+                                otherBench.contains(player.key);
+                            final isMaxReachedAndNotSelected =
+                                isMaxReached && !isSelected;
+                            return PlayerSelectCard(
+                              name: player.name,
+                              isSelected: isSelected,
+                              enabled:
+                                  !isInHomeTeam && !isMaxReachedAndNotSelected,
+                              subTitele:
+                                  isInHomeTeam
+                                      ? const Text(
+                                        'Player is playing for home team',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 12,
+                                        ),
+                                      )
+                                      : isMaxReachedAndNotSelected
+                                      ? const Text(
+                                        'Maximum lineup size reached',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 12,
+                                        ),
+                                      )
+                                      : Text(
+                                        player.position,
+                                        style: Fontstyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          color: AppColors.black,
+                                        ),
+                                      ),
+                              imageData: player.imageData,
+                              onChanged:
+                                  isInHomeTeam || isMaxReachedAndNotSelected
                                       ? null
-                                      : (selected) {
+                                      : (value) {
                                         final newLineup = List<String>.from(
                                           awayLineup,
                                         );
-                                        if (selected &&
+                                        if (value == true &&
                                             newLineup.length <
                                                 widget.data.maxLinup) {
                                           newLineup.add(player.key!);
-                                        } else if (!selected) {
-                                          newLineup.remove(player.key!);
+                                        } else if (value == false) {
+                                          newLineup.remove(player.key);
                                         }
                                         awayLineupNotifier.value = newLineup;
                                       },
