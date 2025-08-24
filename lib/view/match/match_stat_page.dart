@@ -268,7 +268,6 @@ class _MatchStatPageState extends State<MatchStatPage> {
                     (match!.redCards ?? [])
                         .where((g) => g['playerKey'] == playerKey)
                         .length;
-                final isSentOff = reds > 0 || yellows >= 2;
                 return Column(
                   children: [
                     Row(

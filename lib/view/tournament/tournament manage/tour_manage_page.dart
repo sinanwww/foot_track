@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/tournament/tournament_model.dart';
 import 'package:foot_track/model/tournament/round_model.dart';
@@ -7,8 +5,6 @@ import 'package:foot_track/model/match/match_model.dart';
 import 'package:foot_track/model/team/team_model.dart';
 import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
-import 'package:foot_track/utls/resp.dart';
-import 'package:foot_track/utls/widgets/arrow_button.dart';
 import 'package:foot_track/utls/widgets/type_field.dart';
 import 'package:foot_track/view/match/Match%20Details/match_details_page.dart';
 import 'package:foot_track/view%20model/tournament_service.dart';
@@ -16,7 +12,7 @@ import 'package:foot_track/view%20model/match_service.dart';
 import 'package:foot_track/view%20model/team_service.dart';
 import 'package:foot_track/view/navbar/nav_controller.dart';
 import 'package:foot_track/view/tournament/create%20tournament/add_round_page.dart';
-import 'package:foot_track/view/tournament/create%20tournament/tour_match/select_config_page.dart';
+import 'package:foot_track/view/tournament/create%20tournament/tournament_match/select_config_page.dart';
 import 'package:foot_track/view/match/date_bottem.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -34,6 +30,7 @@ class _TourManagePageState extends State<TourManagePage> {
   final MatchService _matchService = MatchService();
   final TeamService _teamService = TeamService();
   TournamentModel? tournament;
+  List<String?> tourTeams = [];
 
   @override
   void initState() {
@@ -478,6 +475,7 @@ class _TourManagePageState extends State<TourManagePage> {
                           (team) => !tournament!.teamKeys.contains(team.key),
                         )
                         .toList();
+
                 return DropdownButton<TeamModel>(
                   isExpanded: true,
                   hint: const Text('Select Team'),
@@ -628,371 +626,366 @@ class _TourManagePageState extends State<TourManagePage> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: FormWrap(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Tournament Details',
-                      style: Fontstyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Tournament Details',
+                    style: Fontstyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.edit,
-                            color: AppColors.primary,
-                          ),
-                          onPressed: _showEditTournamentDialog,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: _showDeleteTournamentDialog,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Description: ${tournament!.description ?? "N/A"}',
-                  style: Fontstyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.secondary,
                   ),
-                ),
-                Text(
-                  'Venue: ${tournament!.venue ?? "N/A"}',
-                  style: Fontstyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.secondary,
-                  ),
-                ),
-                Text(
-                  'Date: ${tournament!.date != null ? DateFormat('dd-MM-yyyy').format(tournament!.date!) : "N/A"}',
-                  style: Fontstyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.secondary,
-                  ),
-                ),
-                FutureBuilder<TeamModel?>(
-                  future:
-                      tournament!.winner != null
-                          ? _teamService.getTeam(tournament!.winner!)
-                          : Future.value(null),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    }
-                    final winnerTeam = snapshot.data;
-                    return Text(
-                      'Winner: ${winnerTeam?.name ?? "No winner declared"}',
-                      style: Fontstyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.secondary,
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: AppColors.primary),
+                        onPressed: _showEditTournamentDialog,
                       ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Teams',
-                      style: Fontstyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.secondary,
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: _showDeleteTournamentDialog,
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.add, color: AppColors.primary),
-                      onPressed: _showAddTeamDialog,
-                    ),
-                  ],
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Description: ${tournament!.description ?? "N/A"}',
+                style: Fontstyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.secondary,
                 ),
-                FutureBuilder<List<TeamModel>>(
-                  future: Future.wait(
-                    (tournament!.teamKeys).map(
-                      (key) => _teamService.getTeam(key),
+              ),
+              Text(
+                'Venue: ${tournament!.venue ?? "N/A"}',
+                style: Fontstyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.secondary,
+                ),
+              ),
+              Text(
+                'Date: ${tournament!.date != null ? DateFormat('dd-MM-yyyy').format(tournament!.date!) : "N/A"}',
+                style: Fontstyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.secondary,
+                ),
+              ),
+              FutureBuilder<TeamModel?>(
+                future:
+                    tournament!.winner != null
+                        ? _teamService.getTeam(tournament!.winner!)
+                        : Future.value(null),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  final winnerTeam = snapshot.data;
+                  return Text(
+                    'Winner: ${winnerTeam?.name ?? "No winner declared"}',
+                    style: Fontstyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.secondary,
                     ),
-                  ).then((teams) => teams.whereType<TeamModel>().toList()),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    }
-                    if (snapshot.hasError ||
-                        !snapshot.hasData ||
-                        snapshot.data!.isEmpty) {
-                      return const Text('No teams added');
-                    }
-                    return Column(
-                      children:
-                          snapshot.data!.map((team) {
-                            return Card(
-                              child: ListTile(
-                                leading:
-                                    team.logoImage != null
-                                        ? Image.memory(
-                                          team.logoImage!,
-                                          height: 20,
-                                        )
-                                        : Image.asset(
-                                          "assets/icon/logo.png",
-                                          color: Colors.grey,
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Teams',
+                    style: Fontstyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add, color: AppColors.primary),
+                    onPressed: _showAddTeamDialog,
+                  ),
+                ],
+              ),
+              FutureBuilder<List<TeamModel>>(
+                future: Future.wait(
+                  (tournament!.teamKeys).map(
+                    (key) => _teamService.getTeam(key),
+                  ),
+                ).then((teams) {
+                  tourTeams = teams.map((e) => e!.key).toList();
+                  return teams.whereType<TeamModel>().toList();
+                }),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  if (snapshot.hasError ||
+                      !snapshot.hasData ||
+                      snapshot.data!.isEmpty) {
+                    return const Text('No teams added');
+                  }
+                  return Column(
+                    children:
+                        snapshot.data!.map((team) {
+                          return Card(
+                            child: ListTile(
+                              leading:
+                                  team.logoImage != null
+                                      ? Image.memory(
+                                        team.logoImage!,
+                                        height: 20,
+                                        width: 20,
+                                      )
+                                      : Image.asset(
+                                        "assets/icon/logo.png",
+                                        color: Colors.grey,
 
-                                          height: 20,
-                                        ),
-                                title: Text(
-                                  team.name ?? 'Unnamed Team',
-                                  style: Fontstyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                  ),
-                                ),
-                                trailing: IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed:
-                                      () => _showDeleteTeamDialog(
-                                        team.key!,
-                                        team.name ?? 'Unnamed Team',
+                                        height: 20,width: 20,
                                       ),
+                              title: Text(
+                                team.name ?? 'Unnamed Team',
+                                style: Fontstyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
                                 ),
                               ),
-                            );
-                          }).toList(),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Rounds',
-                  style: Fontstyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.black,
-                  ),
-                ),
-                if (tournament!.rounds.isEmpty)
-                  const Text('No rounds added')
-                else
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children:
-                        tournament!.rounds.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final round = entry.value;
-                          return Container(
-                            margin: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Theme(
-                              data: Theme.of(
-                                context,
-                              ).copyWith(dividerColor: Colors.transparent),
-                              child: ExpansionTile(
-                                collapsedIconColor:
-                                    Theme.of(context).colorScheme.secondary,
-                                iconColor:
-                                    Theme.of(context).colorScheme.secondary,
-                                title: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      round.name ?? 'Round ${index + 1}',
-                                      style: Fontstyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.secondary,
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.edit,
-                                            color: AppColors.primary,
-                                          ),
-                                          onPressed:
-                                              () => _showEditRoundDialog(
-                                                index,
-                                                round,
-                                              ),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.delete,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed:
-                                              () =>
-                                                  _showDeleteRoundDialog(index),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                              trailing: IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
                                 ),
-                                children: [
-                                  Text(round.description ?? ""),
-                                  FutureBuilder<List<MatchModel>>(
-                                    future: Future.wait(
-                                      round.matchKeys.map(
-                                        (key) => _matchService.getMatch(key),
-                                      ),
-                                    ).then(
-                                      (matches) =>
-                                          matches
-                                              .whereType<MatchModel>()
-                                              .toList(),
+                                onPressed:
+                                    () => _showDeleteTeamDialog(
+                                      team.key!,
+                                      team.name ?? 'Unnamed Team',
                                     ),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return const CircularProgressIndicator();
-                                      }
-                                      if (snapshot.hasError ||
-                                          !snapshot.hasData ||
-                                          snapshot.data!.isEmpty) {
-                                        return const Text(
-                                          'No matches in this round',
-                                        );
-                                      }
-                                      return Column(
-                                        children:
-                                            snapshot.data!.map((match) {
-                                              return FutureBuilder<
-                                                List<TeamModel>
-                                              >(
-                                                future: Future.wait([
-                                                  _teamService.getTeam(
-                                                    match.homeTeamKey!,
-                                                  ),
-                                                  _teamService.getTeam(
-                                                    match.awayTeamKey!,
-                                                  ),
-                                                ]).then(
-                                                  (teams) =>
-                                                      teams
-                                                          .whereType<
-                                                            TeamModel
-                                                          >()
-                                                          .toList(),
-                                                ),
-                                                builder: (
-                                                  context,
-                                                  teamSnapshot,
-                                                ) {
-                                                  if (teamSnapshot
-                                                          .connectionState ==
-                                                      ConnectionState.waiting) {
-                                                    return const CircularProgressIndicator();
-                                                  }
-                                                  final teams =
-                                                      teamSnapshot.data ?? [];
-                                                  final homeTeam =
-                                                      teams.isNotEmpty
-                                                          ? teams[0]
-                                                          : null;
-                                                  final awayTeam =
-                                                      teams.length > 1
-                                                          ? teams[1]
-                                                          : null;
-                                                  return Card(
-                                                    elevation: 3,
-                                                    color:
-                                                        Theme.of(
-                                                          context,
-                                                        ).colorScheme.surface,
-                                                    child: ListTile(
-                                                      onTap: () {
-                                                        Get.to(
-                                                          () =>
-                                                              MatchDetailsPage(
-                                                                matchKey:
-                                                                    match.key!,
-                                                              ),
-                                                        );
-                                                      },
-                                                      title: Text(
-                                                        '${homeTeam?.name ?? "Unknown"} vs ${awayTeam?.name ?? "Unknown"}',
-                                                        style: Fontstyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .secondary,
-                                                        ),
-                                                      ),
-                                                      subtitle: Text(
-                                                        'Score: ${match.homeScore ?? 0} - ${match.awayScore ?? 0}',
-                                                        style: Fontstyle(
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .secondary,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            }).toList(),
-                                      );
-                                    },
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Get.to(
-                                        () => SelectMatchConfigPage(
-                                          tournamentKey: widget.tournamentKey,
-                                          roundIndex: index,
-                                        ),
-                                      );
-                                    },
-                                    child: const Text(
-                                      'Add Match',
-                                      style: TextStyle(
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                  ),
-                                ],
                               ),
                             ),
                           );
                         }).toList(),
-                  ),
-                const SizedBox(height: 20),
-              ],
-            ),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Rounds',
+                style: Fontstyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                ),
+              ),
+              if (tournament!.rounds.isEmpty)
+                const Text('No rounds added')
+              else
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children:
+                      tournament!.rounds.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final round = entry.value;
+                        return Container(
+                          margin: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Theme(
+                            data: Theme.of(
+                              context,
+                            ).copyWith(dividerColor: Colors.transparent),
+                            child: ExpansionTile(
+                              collapsedIconColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              iconColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    round.name ?? 'Round ${index + 1}',
+                                    style: Fontstyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.secondary,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          color: AppColors.primary,
+                                        ),
+                                        onPressed:
+                                            () => _showEditRoundDialog(
+                                              index,
+                                              round,
+                                            ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed:
+                                            () => _showDeleteRoundDialog(index),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              children: [
+                                Text(round.description ?? ""),
+                                FutureBuilder<List<MatchModel>>(
+                                  future: Future.wait(
+                                    round.matchKeys.map(
+                                      (key) => _matchService.getMatch(key),
+                                    ),
+                                  ).then(
+                                    (matches) =>
+                                        matches
+                                            .whereType<MatchModel>()
+                                            .toList(),
+                                  ),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const CircularProgressIndicator();
+                                    }
+                                    if (snapshot.hasError ||
+                                        !snapshot.hasData ||
+                                        snapshot.data!.isEmpty) {
+                                      return const Text(
+                                        'No matches in this round',
+                                      );
+                                    }
+                                    return Column(
+                                      children:
+                                          snapshot.data!.map((match) {
+                                            return FutureBuilder<
+                                              List<TeamModel>
+                                            >(
+                                              future: Future.wait([
+                                                _teamService.getTeam(
+                                                  match.homeTeamKey!,
+                                                ),
+                                                _teamService.getTeam(
+                                                  match.awayTeamKey!,
+                                                ),
+                                              ]).then(
+                                                (teams) =>
+                                                    teams
+                                                        .whereType<TeamModel>()
+                                                        .toList(),
+                                              ),
+                                              builder: (context, teamSnapshot) {
+                                                if (teamSnapshot
+                                                        .connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return const CircularProgressIndicator();
+                                                }
+                                                final teams =
+                                                    teamSnapshot.data ?? [];
+                                                final homeTeam =
+                                                    teams.isNotEmpty
+                                                        ? teams[0]
+                                                        : null;
+                                                final awayTeam =
+                                                    teams.length > 1
+                                                        ? teams[1]
+                                                        : null;
+                                                return Card(
+                                                  elevation: 3,
+                                                  color:
+                                                      Theme.of(
+                                                        context,
+                                                      ).colorScheme.surface,
+                                                  child: ListTile(
+                                                    onTap: () {
+                                                      Get.to(
+                                                        () => MatchDetailsPage(
+                                                          matchKey: match.key!,
+                                                        ),
+                                                      );
+                                                    },
+                                                    title: Text(
+                                                      '${homeTeam?.name ?? "Unknown"} vs ${awayTeam?.name ?? "Unknown"}',
+                                                      style: Fontstyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color:
+                                                            Theme.of(context)
+                                                                .colorScheme
+                                                                .secondary,
+                                                      ),
+                                                    ),
+                                                    subtitle: Text(
+                                                      'Score: ${match.homeScore ?? 0} - ${match.awayScore ?? 0}',
+                                                      style: Fontstyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color:
+                                                            Theme.of(context)
+                                                                .colorScheme
+                                                                .secondary,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          }).toList(),
+                                    );
+                                  },
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Get.to(
+                                      () => SelectMatchConfigPage(
+                                        teamKeys:
+                                            tourTeams
+                                                .whereType<String>()
+                                                .toList(),
+                                        tournamentKey: widget.tournamentKey,
+                                        roundIndex: index,
+                                      ),
+                                    );
+
+                                    print(tourTeams);
+                                  },
+                                  child: const Text(
+                                    'Add Match',
+                                    style: TextStyle(color: AppColors.primary),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                ),
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),

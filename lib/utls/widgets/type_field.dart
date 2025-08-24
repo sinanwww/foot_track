@@ -5,11 +5,13 @@ class TypeField extends StatefulWidget {
   final String hintText;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
+  final TextInputType? keyboardType;
   const TypeField({
     super.key,
     required this.hintText,
     required this.controller,
     this.validator,
+    this.keyboardType = TextInputType.text,
   });
 
   @override
@@ -20,6 +22,7 @@ class _TypeFieldState extends State<TypeField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      keyboardType: widget.keyboardType,
       style: Fontstyle(color: Theme.of(context).colorScheme.secondary),
       validator: widget.validator,
       controller: widget.controller,

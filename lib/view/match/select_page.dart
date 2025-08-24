@@ -4,8 +4,8 @@ import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/resp.dart';
 import 'package:foot_track/utls/widgets/arrow_button.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
-import 'package:foot_track/view/match/create_match.dart';
 import 'package:foot_track/view/match/date_bottem.dart';
+import 'package:foot_track/view/match/match_creation/home/select_home_page.dart';
 import 'package:foot_track/view/match/time_bottem.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -136,7 +136,7 @@ class _SelectPageState extends State<SelectPage> {
                             );
                           } else {
                             Get.to(
-                              () => CreateMatchPage(
+                              () => SelectHomeTeamPage(
                                 maxLinup: selectedLineup!,
                                 date: date,
                                 startTime: startTime,

@@ -18,6 +18,7 @@ class DeleteBox extends StatelessWidget {
     return Dialog(
       child: SizedBox(
         height: 200,
+        width: 300,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,

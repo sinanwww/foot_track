@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/utls/app_theam.dart';
+import 'package:foot_track/utls/resp.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
 
 class AboutPage extends StatelessWidget {
@@ -13,53 +14,55 @@ class AboutPage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // App Description
-                Text(
-                  'Welcome to Foot Track',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
+            child: FormWrap(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // App Description
+                  Text(
+                    'Welcome to Foot Track',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Foot Track is your ultimate companion for managing football teams, players, matches, and tournaments. Organize your teams, track player performance, and create exciting tournaments with ease.',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(color: AppColors.secondary),
-                ),
-                const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Foot Track is your ultimate companion for managing football teams, players, matches, and tournaments. Organize your teams, track player performance, and create exciting tournaments with ease.',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge?.copyWith(color: AppColors.secondary),
+                  ),
+                  const SizedBox(height: 24),
 
-                // Info Cards in GridView
-                _buildInfoCard(
-                  context,
-                  icon: Icons.info,
-                  title: 'App Version',
-                  description: 'Version 1.0.0',
-                ),
-                _buildInfoCard(
-                  context,
-                  icon: Icons.email,
-                  title: 'Contact Us',
-                  description: 'support@foottrack.com',
-                ),
-                _buildInfoCard(
-                  context,
-                  icon: Icons.developer_mode,
-                  title: 'Developed By',
-                  description: 'Foot Track Team',
-                ),
-                _buildInfoCard(
-                  context,
-                  icon: Icons.star,
-                  title: 'Our Mission',
-                  description:
-                      'Empowering football enthusiasts to manage their teams and tournaments effortlessly.',
-                ),
-              ],
+                  // Info Cards in GridView
+                  _buildInfoCard(
+                    context,
+                    icon: Icons.info,
+                    title: 'App Version',
+                    description: 'Version 1.0.0',
+                  ),
+                  _buildInfoCard(
+                    context,
+                    icon: Icons.email,
+                    title: 'Contact Us',
+                    description: 'support@foottrack.com',
+                  ),
+                  _buildInfoCard(
+                    context,
+                    icon: Icons.developer_mode,
+                    title: 'Developed By',
+                    description: 'Foot Track Team',
+                  ),
+                  _buildInfoCard(
+                    context,
+                    icon: Icons.star,
+                    title: 'Our Mission',
+                    description:
+                        'Empowering football enthusiasts to manage their teams and tournaments effortlessly.',
+                  ),
+                ],
+              ),
             ),
           ),
         ),

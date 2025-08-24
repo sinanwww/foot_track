@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/player/player_model.dart';
 import 'package:foot_track/utls/resp.dart';
+import 'package:foot_track/utls/widgets/add_float_button.dart';
 import 'package:foot_track/utls/widgets/search_field.dart';
 import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/view%20model/player.dart';
+import 'package:foot_track/view/player/add_player_page.dart';
 import 'package:foot_track/view/player/widgets/player_card.dart';
+import 'package:get/get.dart';
 
 class PlayersPage extends StatefulWidget {
   const PlayersPage({super.key});
@@ -77,8 +80,8 @@ class _PlayersPageState extends State<PlayersPage> {
                         builder: (context, cst) {
                           int count = 1;
                           double ratio = 4 / 1;
-                         ratio = getRatio(cst.maxWidth);
-                    count = getCount(cst.maxWidth);
+                          ratio = getRatio(cst.maxWidth);
+                          count = getCount(cst.maxWidth);
                           return GridView.builder(
                             padding: const EdgeInsets.all(15),
                             itemCount: filteredPlayers.length,
@@ -103,6 +106,12 @@ class _PlayersPageState extends State<PlayersPage> {
             );
           },
         ),
+      ),
+      floatingActionButton: AddFloatButton(
+        label: "Add Player",
+        onPressed: () {
+          Get.to(() => const AddPlayerPage());
+        },
       ),
     );
   }

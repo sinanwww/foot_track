@@ -139,7 +139,7 @@ class _MatchesListState extends State<MatchesList> {
                       style: Fontstyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.black,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
                   );

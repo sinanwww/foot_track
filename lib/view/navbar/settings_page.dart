@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foot_track/view/account/profile_page.dart';
 import 'package:foot_track/view/settings/about_page.dart';
 import 'package:foot_track/view/settings/help_page.dart';
 import 'package:foot_track/view/settings/privecy_policy_page.dart';
@@ -23,7 +24,7 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: ListView.separated(
         padding: const EdgeInsets.all(30),
-        itemCount: 4,
+        itemCount: 5,
         itemBuilder: (context, index) {
           switch (index) {
             case 0:
@@ -56,6 +57,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 icon: Icons.description_rounded,
                 onTap: () {
                   Get.to(() => const TermsAndConditionsPage());
+                },
+              );
+            case 4:
+              return setinngsBtn(
+                label: "Profile",
+                icon: Icons.person,
+                onTap: () {
+                  Get.to(() => const ProfilePage());
                 },
               );
 

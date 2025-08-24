@@ -29,16 +29,16 @@ class MatchModelAdapter extends TypeAdapter<MatchModel> {
       description: fields[9] as String?,
       goalScorers: (fields[10] as List?)
           ?.map((dynamic e) => (e as Map).cast<String, dynamic>())
-          ?.toList(),
+          .toList(),
       yellowCards: (fields[11] as List?)
           ?.map((dynamic e) => (e as Map).cast<String, dynamic>())
-          ?.toList(),
+          .toList(),
       redCards: (fields[12] as List?)
           ?.map((dynamic e) => (e as Map).cast<String, dynamic>())
-          ?.toList(),
+          .toList(),
       substitutions: (fields[13] as List?)
           ?.map((dynamic e) => (e as Map).cast<String, dynamic>())
-          ?.toList(),
+          .toList(),
       homeBench: (fields[14] as List?)?.cast<String>(),
       awayBench: (fields[15] as List?)?.cast<String>(),
       status: fields[16] as String?,

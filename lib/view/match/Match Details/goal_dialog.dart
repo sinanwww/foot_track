@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/match/match_model.dart';
-import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/view%20model/match_service.dart';
 

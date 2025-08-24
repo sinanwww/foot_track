@@ -1,11 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/team/team_model.dart';
 import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/resp.dart';
+import 'package:foot_track/utls/widgets/add_float_button.dart';
 import 'package:foot_track/utls/widgets/search_field.dart';
 import 'package:foot_track/view%20model/team_service.dart';
+import 'package:foot_track/view/team/new_team/team_name_page.dart';
 import 'package:foot_track/view/team/team_detail_page.dart';
 import 'package:get/get.dart';
 
@@ -66,8 +66,8 @@ class _TeamsPageState extends State<TeamsPage> {
                     builder: (context, cst) {
                       int count = 1;
                       double ratio = 4 / 1;
-                     ratio = getRatio(cst.maxWidth);
-                    count = getCount(cst.maxWidth);
+                      ratio = getRatio(cst.maxWidth);
+                      count = getCount(cst.maxWidth);
                       return ValueListenableBuilder<List<TeamModel>>(
                         valueListenable: _searchHandler!.filteredItemsNotifier,
                         builder: (context, teams, _) {
@@ -108,18 +108,19 @@ class _TeamsPageState extends State<TeamsPage> {
                                   ),
                                   child: Row(
                                     children: [
-                                   showdata.logoImage != null
-                                              ? Image.memory(
-                                                showdata.logoImage!
-                                                ,scale: 4,
-                                                height: 40,
-                                              )
-                                              : Image.asset(
-                                                "assets/icon/logo.png",
-                                                color: Colors.grey,
-                                                scale: 4,
-                                                height: 40,
-                                              ),
+                                      showdata.logoImage != null
+                                          ? Image.memory(
+                                            showdata.logoImage!,
+                                            scale: 4,
+                                            height: 40,
+                                            width: 40,
+                                          )
+                                          : Image.asset(
+                                            "assets/icon/logo.png",
+                                            color: Colors.grey,
+                                            scale: 4,
+                                            height: 40,
+                                          ),
                                       const SizedBox(width: 15),
                                       Text(
                                         showdata.name ?? "",
@@ -151,6 +152,12 @@ class _TeamsPageState extends State<TeamsPage> {
             );
           },
         ),
+      ),
+      floatingActionButton: AddFloatButton(
+        label: "Add Team",
+        onPressed: () {
+          Get.to(() => const TeamNamePage());
+        },
       ),
     );
   }

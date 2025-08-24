@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/player/player_model.dart';
 import 'package:foot_track/utls/app_theam.dart';

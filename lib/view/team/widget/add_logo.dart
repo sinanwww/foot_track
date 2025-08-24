@@ -1,9 +1,7 @@
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:foot_track/utls/app_theam.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io' show File;
 
 class AddLogo extends StatefulWidget {
   final Function(Uint8List?)? onImageSelected;

@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foot_track/utls/font_style.dart';
 
 class MatchCard extends StatelessWidget {
@@ -71,7 +70,7 @@ Widget cardRow({
   required String score,
 }) => Row(
   children: [
-    Image.memory(imagePath, width: 20, fit: BoxFit.fill),
+    Image.memory(imagePath, height: 20, width: 20, fit: BoxFit.fill),
     SizedBox(width: 10),
     Text(teamName),
     Spacer(),

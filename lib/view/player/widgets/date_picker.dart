@@ -37,7 +37,9 @@ class DatePickerWidget extends StatelessWidget {
           maxDateTime: DateTime.now(),
           minDateTime: DateTime(1980),
           backgroundColor: Theme.of(context).colorScheme.surface,
+          // ignore: deprecated_member_use
           closeIconColor: Theme.of(context).colorScheme.secondary,
+          // ignore: deprecated_member_use
           pickerTextStyle: Fontstyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,

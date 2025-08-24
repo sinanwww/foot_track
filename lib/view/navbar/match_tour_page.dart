@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
-import 'package:foot_track/view/navbar/matches_page.dart';
+import 'package:foot_track/view/match/matches_page.dart';
 import 'package:foot_track/view/tournament/tournaments_page.dart';
 
 class MatchTourPage extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/tournament/tournament_model.dart';
-import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
+import 'package:foot_track/utls/resp.dart';
 import 'package:foot_track/utls/widgets/arrow_button.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
 import 'package:foot_track/utls/widgets/type_field.dart';
@@ -88,50 +88,52 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
           padding: const EdgeInsets.all(30),
           child: Form(
             key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                labelText("Name"),
-                TypeField(
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Team name cannot be empty';
-                    }
-                    return null;
-                  },
-                  hintText: "Tournament name",
-                  controller: nameCt,
-                ),
-                labelText("Venue"),
-                TypeField(
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Team Venue cannot be empty';
-                    }
-                    return null;
-                  },
-                  hintText: "Venue",
-                  controller: venueCt,
-                ),
-                labelText("Date"),
-                DatePickerBottem(
-                  controller: dateCt,
-                  onSubmit: (date) {
-                    selectedDate = date;
-                    dateCt.text = DateFormat('dd-MM-yyyy').format(date);
-                  },
-                ),
-                const SizedBox(height: 80),
-                ArrowButton(
-                  label: "Next",
-                  onClick: () {
-                    if (_formKey.currentState!.validate()) {
-                      _saveTournament();
-                    }
-                    ;
-                  },
-                ),
-              ],
+            child: FormWrap(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  labelText("Name"),
+                  TypeField(
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Team name cannot be empty';
+                      }
+                      return null;
+                    },
+                    hintText: "Tournament name",
+                    controller: nameCt,
+                  ),
+                  labelText("Venue"),
+                  TypeField(
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Team Venue cannot be empty';
+                      }
+                      return null;
+                    },
+                    hintText: "Venue",
+                    controller: venueCt,
+                  ),
+                  labelText("Date"),
+                  DatePickerBottem(
+                    controller: dateCt,
+                    onSubmit: (date) {
+                      selectedDate = date;
+                      dateCt.text = DateFormat('dd-MM-yyyy').format(date);
+                    },
+                  ),
+                  const SizedBox(height: 80),
+                  ArrowButton(
+                    label: "Next",
+                    onClick: () {
+                      if (_formKey.currentState!.validate()) {
+                        _saveTournament();
+                      }
+                      ;
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -144,7 +146,7 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
     child: Text(
       label,
       style: Fontstyle(
-        color: AppColors.black,
+        color: Theme.of(context).colorScheme.secondary,
         fontWeight: FontWeight.w400,
         fontSize: 18,
       ),

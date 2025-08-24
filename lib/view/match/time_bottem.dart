@@ -37,6 +37,7 @@ class TimePickerBottom extends StatelessWidget {
                   surface: Theme.of(context).colorScheme.surface,
                   onSurface: Theme.of(context).colorScheme.secondary,
                 ),
+                // ignore: deprecated_member_use
                 dialogBackgroundColor: Theme.of(context).colorScheme.surface,
                 buttonTheme: const ButtonThemeData(
                   textTheme: ButtonTextTheme.primary,

@@ -199,6 +199,7 @@ class _AddTeamPlayerPageState extends State<AddTeamPlayerPage> {
                         ),
                       ),
                     ),
+                    SizedBox(width: 5),
                   ],
                 ),
                 Expanded(

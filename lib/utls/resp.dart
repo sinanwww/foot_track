@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 double getRatio(screenWidth) {
   double ratio = 4 / 1;

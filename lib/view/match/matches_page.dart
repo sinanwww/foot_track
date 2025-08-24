@@ -3,9 +3,11 @@ import 'package:foot_track/model/match/match_model.dart';
 import 'package:foot_track/model/team/team_model.dart';
 import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/resp.dart';
+import 'package:foot_track/utls/widgets/add_float_button.dart';
 import 'package:foot_track/utls/widgets/match_card.dart';
 import 'package:foot_track/view/match/match_stat_page.dart';
 import 'package:foot_track/view%20model/team_service.dart';
+import 'package:foot_track/view/match/select_page.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
@@ -50,6 +52,13 @@ class _MatchesPageState extends State<MatchesPage> {
               valueListenable: snapshot.data!.listenable(),
               builder: (context, box, _) {
                 final matches = box.values.toList();
+
+                matches.sort((a, b) {
+                  if (a.date == null && b.date == null) return 0;
+                  if (a.date == null) return 1; // Put a at the end
+                  if (b.date == null) return -1; // Put b at the end
+                  return b.date!.compareTo(a.date!); // Safe now
+                });
                 if (matches.isEmpty) {
                   return const Center(child: Text('No matches available'));
                 }
@@ -69,6 +78,7 @@ class _MatchesPageState extends State<MatchesPage> {
                       padding: const EdgeInsets.all(10),
                       itemBuilder: (context, index) {
                         final match = matches[index];
+
                         if (match.key == null) {
                           return const Card(
                             child: Center(child: Text('Invalid match data')),
@@ -136,6 +146,12 @@ class _MatchesPageState extends State<MatchesPage> {
             );
           },
         ),
+      ),
+      floatingActionButton: AddFloatButton(
+        label: "Add Match",
+        onPressed: () {
+          Get.to(() => const SelectPage());
+        },
       ),
     );
   }

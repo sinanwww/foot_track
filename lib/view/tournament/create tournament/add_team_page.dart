@@ -1,7 +1,6 @@
-import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:foot_track/model/team/team_model.dart';
-import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/resp.dart';
 import 'package:foot_track/utls/widgets/arrow_button.dart';

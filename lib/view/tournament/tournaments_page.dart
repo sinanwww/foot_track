@@ -3,6 +3,7 @@ import 'package:foot_track/model/tournament/tournament_model.dart';
 import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
 import 'package:foot_track/utls/resp.dart';
+import 'package:foot_track/utls/widgets/add_float_button.dart';
 import 'package:foot_track/view/tournament/create%20tournament/add_tour_page%20.dart';
 import 'package:foot_track/view/tournament/tournament%20manage/tour_manage_page.dart';
 import 'package:foot_track/view%20model/tournament_service.dart';
@@ -121,16 +122,11 @@ class _TournamentListPageState extends State<TournamentListPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+      floatingActionButton: AddFloatButton(
+        label: "Add Tournament",
         onPressed: () {
           Get.to(() => const AddTournamentPage());
         },
-        label: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [Text("Add Tournament"), Icon(Icons.add)],
-        ),
       ),
     );
   }

@@ -93,27 +93,20 @@ class _CarouselWidgetState extends State<CarouselWidget> {
                                   image: AssetImage(e.imagePath),
                                   fit: BoxFit.fill,
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    // ignore: deprecated_member_use
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
                               ),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Container(
-                                    // margin: EdgeInsets.all(10.w),
-                                    color: Colors.black54,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black54,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
-                                      // crossAxisAlignment:
-                                      //     CrossAxisAlignment.end,
+
                                       children: [
                                         Text(
                                           e.label,

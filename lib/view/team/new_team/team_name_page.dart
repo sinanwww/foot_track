@@ -93,16 +93,8 @@ class _TeamNamePageState extends State<TeamNamePage> {
                           teamPlayer: {}, // Initialize empty teamPlayer map
                         );
                         final key = await TeamRepo().addTeam(teamModel);
-                        if (key != null) {
-                          Get.to(() => CreateTeam(teamKey: key));
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Failed to create team'),
-                            ),
-                          );
-                        }
-                      }
+                        Get.to(() => CreateTeam(teamKey: key));
+                                            }
                     },
                   ),
                 ],

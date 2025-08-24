@@ -1,7 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:foot_track/model/team/team_model.dart';
 import 'dart:typed_data';
-import 'dart:io' show File;
 
 class TeamService {
   static const String _boxName = 'teams';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foot_track/model/tournament/tournament_model.dart';
 import 'package:foot_track/utls/app_theam.dart';
 import 'package:foot_track/utls/font_style.dart';
@@ -28,7 +29,10 @@ class _TournamentListState extends State<TournamentList> {
           future: _tournamentService.getAllTournaments(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return SizedBox(
+                height: 160.h,
+                child: const Center(child: CircularProgressIndicator()),
+              );
             }
             if (snapshot.hasError) {
               return Center(
@@ -44,13 +48,16 @@ class _TournamentListState extends State<TournamentList> {
             }
             final tournaments = snapshot.data ?? [];
             if (tournaments.isEmpty) {
-              return Center(
-                child: Text(
-                  'No tournaments found',
-                  style: Fontstyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.black,
+              return SizedBox(
+                height: 150,
+                child: Center(
+                  child: Text(
+                    'No tournaments found',
+                    style: Fontstyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.black,
+                    ),
                   ),
                 ),
               );
@@ -114,7 +121,7 @@ class _TournamentListState extends State<TournamentList> {
                   ),
                 ),
                 SizedBox(
-                  height: 150,
+                  height: 200.h,
 
                   child:
                       filteredTournaments.isEmpty

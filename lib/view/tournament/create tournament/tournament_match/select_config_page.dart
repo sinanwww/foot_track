@@ -6,18 +6,19 @@ import 'package:foot_track/utls/widgets/arrow_button.dart';
 import 'package:foot_track/utls/widgets/costom_appbar.dart';
 import 'package:foot_track/view/match/date_bottem.dart';
 import 'package:foot_track/view/match/time_bottem.dart';
-import 'package:foot_track/view/tournament/create%20tournament/tour_match/tour_add_match.dart';
+import 'package:foot_track/view/tournament/create%20tournament/tournament_match/home/tour_match_home.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class SelectMatchConfigPage extends StatefulWidget {
   final String tournamentKey;
   final int roundIndex;
-
+  final List<String> teamKeys;
   const SelectMatchConfigPage({
     super.key,
     required this.tournamentKey,
     required this.roundIndex,
+    required this.teamKeys,
   });
 
   @override
@@ -149,12 +150,13 @@ class _SelectMatchConfigPageState extends State<SelectMatchConfigPage> {
                             );
                           } else {
                             Get.to(
-                              () => AddTournamentMatchPage(
-                                tournamentKey: widget.tournamentKey,
+                              () => SelecTourtHomeTeamPage(
+                                time: startTime!,
+                                date: date!,
+                                maxLinup: selectedLineup!,
                                 roundIndex: widget.roundIndex,
-                                maxLineup: selectedLineup!,
-                                date: date,
-                                startTime: startTime,
+                                teamKeys: widget.teamKeys,
+                                tournamentKey: widget.tournamentKey,
                               ),
                             );
                           }
